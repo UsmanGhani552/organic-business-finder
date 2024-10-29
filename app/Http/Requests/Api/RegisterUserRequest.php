@@ -25,6 +25,7 @@ class RegisterUserRequest extends FormRequest
             'email' => 'required|email|unique:users,email',
             'type' => 'required|in:visitor,farmer',
             'password' => 'required|min:8|confirmed', // Ensure password confirmation
+            'fcm_token' => 'required',
         ];
     }
 }
