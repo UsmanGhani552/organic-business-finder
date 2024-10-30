@@ -52,7 +52,7 @@ class Farm extends Model
             ]);
         }
         foreach ($data['payments'] as $payment_id) {
-            Farmpayment::create([
+            FarmPayment::create([
                 'farm_id' => $farm->id,
                 'payment_id' => $payment_id
             ]);
