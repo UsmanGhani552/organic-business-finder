@@ -48,9 +48,10 @@ class AuthController extends Controller
                     'message' => 'User Login Successfully',
                     'user' => $user,
                     'token' => $token
-                ]);
+                ],200);
             } else {
                 return response()->json([
+                    'status_code' => 400,
                     'error' => 'Invalid email or password'
                 ], 401);
             }
@@ -61,5 +62,21 @@ class AuthController extends Controller
             ], 400);
         }
         
+    }
+
+    public function logout(){
+        try {
+            $user = Auth::user();
+            $user->token()->revoke();
+            return response()->json([
+                'status_code' => 200,
+                'message' => 'User Logged Out Successfully',
+            ],200);
+        } catch (Exception $e) {
+            return response()->json([
+                'status_code' => 400,
+                'message' => $e->getMessage(),
+            ], 400);
+        }
     }
 }

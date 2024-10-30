@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\FarmController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -24,8 +25,10 @@ Route::post('/login', [AuthController::class, 'login']);
 
 // Route::post('login', [RegisterController::class, 'login']);
 
-     
 
-// Route::middleware('auth:api')->group( function () {
 
-// });
+Route::middleware('auth:api')->group( function () {
+    Route::get('/logout', [AuthController::class, 'logout']);
+});
+Route::post('/store-farm', [FarmController::class, 'storeFarm']);
+Route::get('/get-farms', [FarmController::class, 'getFarms']);
