@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('farms', function (Blueprint $table) {
             $table->id();
             //farm details
-            $table->string('category');
+            $table->foreignId('user_id')->constrained('users');
             $table->string('name');
             $table->string('location');
             $table->integer('lat');

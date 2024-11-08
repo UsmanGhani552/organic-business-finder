@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
+use App\Models\Category;
 use App\Models\Day;
 use App\Models\FarmPayment;
 use App\Models\Payment;
@@ -18,15 +19,18 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $payment_methods = ['mastercard','visa','paypal','bitcoin'];
-
         foreach ($payment_methods as $payment_method){
             Payment::create(['name' => $payment_method]);
         }
 
         $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-
         foreach ($days as $day) {
             Day::create(['name' => $day]);
+        }
+        
+        $categories = ['Vegitables','Fruits','Dairy'];
+        foreach ($categories as $category) {
+            Category::create(['name' => $category]);
         }
         
     }

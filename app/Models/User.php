@@ -3,16 +3,19 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use App\Traits\ImageUploadTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, ImageUploadTrait;
 
     /**
      * The attributes that are mass assignable.
@@ -23,7 +26,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'type'
+        'type',
+        'image'
         
     ];
 
@@ -50,7 +54,8 @@ class User extends Authenticatable
     public static function registerUser($data){
 
         $data['password'] = Hash::make($data['password']);
-        return self::create($data);
+        $user = self::create($data);
+        return $user;
     }
 
     public function saveFcmToken($fcmToken){
@@ -58,6 +63,12 @@ class User extends Authenticatable
             ['fcm_token' => $fcmToken],
             ['user_id' => $this->id],
         );
+    }
+
+    public static function editProfile($user,array $data){
+        $data['image'] = (new self)->uploadImage(request(),'image','user',"user/{$user->image}" , $user->image);
+        $user->update($data); 
+        return $user->fresh();
     }
 
     public function deviceTokens()
