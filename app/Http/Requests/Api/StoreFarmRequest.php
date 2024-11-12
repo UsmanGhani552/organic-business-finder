@@ -27,7 +27,7 @@ class StoreFarmRequest extends FormRequest
             'lat' => 'required|numeric',
             'lng' => 'required|numeric',
             'phone' => 'required|string',
-            'email' => 'required|email|unique:farms,email',
+            // 'email' => 'required|email|unique:farms,email',
             'website' => 'required|url',
             'description' => 'required|string',
             'categories' => 'required|array', 
@@ -38,11 +38,11 @@ class StoreFarmRequest extends FormRequest
             'delivery_option' => 'required|string',
             'payments' => 'required|array', // Array of payment IDs
             'payments.*' => 'exists:payments,id', // Each payment must exist in the payments table
-            'image' => 'required|image|max:2048', // Farm image
+            'image' => 'required|mimes:jpg,jpeg,png|max:2048', // Farm image
             'products' => 'required|array', // Array of products
             'products.*.name' => 'required|string', // Name of each product
             'products.*.price' => 'required|numeric', // Price of each product
-            'products.*.image' => 'required|image|max:2048', // Image of each product
+            'products.*.image' => 'required|mimes:jpg,jpeg,png|max:2048', // Image of each product
         ];
     }
 }

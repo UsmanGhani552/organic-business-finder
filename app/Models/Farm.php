@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Auth;
 class Farm extends Model
 {
     use HasFactory, ImageUploadTrait;
+
+    protected $table = 'farms';
     protected $fillable = [
         'user_id',
         'category',
@@ -35,20 +37,8 @@ class Farm extends Model
         $farm = new self;
         $data['image'] = $farm->uploadImage($data['request'], 'image', 'farm');
 
-        $farm = self::create([
-            'user_id' => auth()->user()->id,
-            'name' => $data['name'],
-            'image' => $data['image'],
-            'location' => $data['location'],
-            'lat' => $data['lat'],
-            'lng' => $data['lng'],
-            'phone' => $data['phone'],
-            'email' => $data['email'],
-            'website' => $data['website'],
-            'delivery_option' => $data['delivery_option'],
-            'description' => $data['description'],
-            'timings' => $data['timings'],
-        ]);
+        $farm = self::create(self::farmData($data));
+
         foreach ($data['categories'] as $category_id) {
             FarmCategory::create([
                 'farm_id' => $farm->id,
@@ -85,19 +75,8 @@ class Farm extends Model
         $data['image'] = $farm->uploadImage($data['request'], 'image', 'farm', "farm/{$farm->image}", $farm->image);
         // dd($data['image']);
 
-        $farm->update([
-            'name' => $data['name'],
-            'image' => $data['image'],
-            'location' => $data['location'],
-            'lat' => $data['lat'],
-            'lng' => $data['lng'],
-            'phone' => $data['phone'],
-            'email' => $data['email'],
-            'website' => $data['website'],
-            'delivery_option' => $data['delivery_option'],
-            'description' => $data['description'],
-            'timings' => $data['timings'],
-        ]);
+        $farm->update(self::farmData($data));
+
         if ($data['categories']) {
             $farm->categories()->sync($data['categories']);
         }
@@ -131,7 +110,37 @@ class Farm extends Model
         }
         return $farm;
     }
+    public static function farmData($data){
+        $farmArray = [
+            'user_id' => auth()->user()->id,
+            'name' => $data['name'],
+            'image' => $data['image'],
+            'location' => $data['location'],
+            'lat' => $data['lat'],
+            'lng' => $data['lng'],
+            'phone' => $data['phone'],
+            'email' => $data['email'],
+            'website' => $data['website'],
+            'delivery_option' => $data['delivery_option'],
+            'description' => $data['description'],
+            'timings' => $data['timings'],
+        ];
+        return $farmArray;
+    }
+    public function syncCategories(array $categories)
+{
+    $this->categories()->sync($categories);
+}
 
+public function syncDays(array $days)
+{
+    $this->days()->sync($days);
+}
+
+public function syncPayments(array $payments)
+{
+    $this->payments()->sync($payments);
+}
 
     public function categories()
     {
