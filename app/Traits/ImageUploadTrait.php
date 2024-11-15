@@ -18,7 +18,6 @@ trait ImageUploadTrait
             }
             $file = $request->file($name);
             $originalName = $file->getClientOriginalName();
-            dd($file);
             // $extension = $file->getClientOriginalExtension();
             $filename = time(). $originalName;
             $file->move($path, $filename);

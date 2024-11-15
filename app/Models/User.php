@@ -71,8 +71,17 @@ class User extends Authenticatable
         return $user->fresh();
     }
 
+    public static function changePassword($user,array $data): void{
+        $data['password'] = Hash::make($data['password']);
+        $user->update($data);
+    }
+
     public function deviceTokens()
     {
         return $this->hasMany(DeviceToken::class);
+    }
+
+    public function savedFarms(){
+        return $this->belongsToMany(Farm::class,'saved_farms');
     }
 }

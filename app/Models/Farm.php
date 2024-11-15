@@ -110,7 +110,16 @@ class Farm extends Model
         }
         return $farm;
     }
-    public static function farmData($data){
+    public static function toggleSavedFarm(array $data, $user, $save): void
+    {
+        if ($save) {
+            $user->savedFarms()->syncWithoutDetaching([$data['farm_id']]);
+        } else {
+            $user->savedFarms()->detach([$data['farm_id']]);
+        }
+    }
+    public static function farmData($data)
+    {
         $farmArray = [
             'user_id' => auth()->user()->id,
             'name' => $data['name'],
@@ -128,19 +137,19 @@ class Farm extends Model
         return $farmArray;
     }
     public function syncCategories(array $categories)
-{
-    $this->categories()->sync($categories);
-}
+    {
+        $this->categories()->sync($categories);
+    }
 
-public function syncDays(array $days)
-{
-    $this->days()->sync($days);
-}
+    public function syncDays(array $days)
+    {
+        $this->days()->sync($days);
+    }
 
-public function syncPayments(array $payments)
-{
-    $this->payments()->sync($payments);
-}
+    public function syncPayments(array $payments)
+    {
+        $this->payments()->sync($payments);
+    }
 
     public function categories()
     {

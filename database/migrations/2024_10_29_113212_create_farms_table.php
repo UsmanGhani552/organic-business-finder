@@ -17,8 +17,8 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users');
             $table->string('name');
             $table->string('location');
-            $table->integer('lat');
-            $table->integer('lng');
+            $table->float('lat');
+            $table->float('lng');
             $table->string('phone');
             $table->string('email');
             $table->string('website');
