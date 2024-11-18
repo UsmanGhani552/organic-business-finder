@@ -76,6 +76,14 @@ class User extends Authenticatable
         $user->update($data);
     }
 
+    public static function editImage($user,array $data): void{
+        // dd($data['image']);
+        $data['image'] = (new self)->uploadImage(request(),'image','user',"user/{$user->image}" , $user->image);
+        $user->update($data);
+    }
+
+    
+
     public function deviceTokens()
     {
         return $this->hasMany(DeviceToken::class);

@@ -52,4 +52,25 @@ class UserController extends Controller
             ], 400);
         }
     }
+
+    public function editImage(Request $request){
+        try {
+            // dd($request->image);
+            $validator = $request->validate([
+                'image' => 'image'
+            ]);
+            // dd($validator);
+            $user = Auth::user();
+            User::editImage($user,$validator);
+            return response()->json([
+                'status_code' => 200,
+                'message' => 'User Image Changed Successfully',
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'status_code' => 400,
+                'message' => $e->getMessage(),
+            ], 400);
+        }
+    }
 }

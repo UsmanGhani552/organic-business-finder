@@ -35,6 +35,7 @@ Route::middleware('auth:api')->group( function () {
     //user
     Route::post('/edit-profile', [UserController::class, 'editProfile']);
     Route::post('/change-password', [UserController::class, 'changePassword']);
+    Route::post('/edit-image', [UserController::class, 'editImage']);
 
     //farm
     Route::post('/store-farm', [FarmController::class, 'storeFarm']);
