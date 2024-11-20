@@ -76,13 +76,15 @@ class User extends Authenticatable
         $user->update($data);
     }
 
-    public static function editImage($user,array $data): void{
+    public static function editImage($user): void{
         // dd($data['image']);
-        $data['image'] = (new self)->uploadImage(request(),'image','user',"user/{$user->image}" , $user->image);
-        $user->update($data);
+        $uploadedImagePath = (new self)->uploadImage(request(),'image','user',"user/{$user->image}" , $user->image);
+        $user->update(['image' => $uploadedImagePath]);
     }
 
-    
+    public function farms() {
+        return $this->hasMany(Farm::class);
+    }
 
     public function deviceTokens()
     {

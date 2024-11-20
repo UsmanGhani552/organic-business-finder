@@ -10,6 +10,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -53,18 +54,46 @@ class UserController extends Controller
         }
     }
 
-    public function editImage(Request $request){
+    public function editImage(Request $request)
+    {
         try {
             // dd($request->image);
-            $validator = $request->validate([
-                'image' => 'image'
+            $validator = Validator::make($request->all(), [
+                'image' => 'required|image'
             ]);
+            if ($validator->fails()) {
+                return response()->json([
+                    'status_code' => 422,
+                    'errors' => $validator->errors(), // Include specific validation errors
+                    'message' => 'Validation error occurred.',
+                ], 422);
+            }
             // dd($validator);
             $user = Auth::user();
-            User::editImage($user,$validator);
+            User::editImage($user);
             return response()->json([
                 'status_code' => 200,
                 'message' => 'User Image Changed Successfully',
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'status_code' => 400,
+                'message' => $e->getMessage(),
+            ], 400);
+        }
+    }
+
+    public function deleteAccount()
+    {
+        try {
+            $user = Auth::user();
+            $user->farms->each(function ($farm) {
+                $farm->delete(); // Triggers the deleting event
+            });
+            $user->delete();
+            return response()->json([
+                'status_code' => 200,
+                'message' => 'Account Removed Successfully',
             ], 200);
         } catch (Exception $e) {
             return response()->json([

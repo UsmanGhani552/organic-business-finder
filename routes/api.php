@@ -36,13 +36,17 @@ Route::middleware('auth:api')->group( function () {
     Route::post('/edit-profile', [UserController::class, 'editProfile']);
     Route::post('/change-password', [UserController::class, 'changePassword']);
     Route::post('/edit-image', [UserController::class, 'editImage']);
+    Route::get('/delete-account', [UserController::class, 'deleteAccount']);
 
     //farm
     Route::post('/store-farm', [FarmController::class, 'storeFarm']);
     Route::post('/update-farm/{farm}', [FarmController::class, 'updateFarm']);
     Route::get('/get-farms', [FarmController::class, 'getFarms']);
+    Route::get('/delete-farm/{farm}', [FarmController::class, 'deleteFarm']);
+
     Route::post('/toggle-saved-farm', [FarmController::class, 'toggleSavedFarm']);
     Route::get('/get-saved-farms', [FarmController::class, 'getSavedFarms']);
 });
 Route::get('/get-featured-farms', [FarmController::class, 'getFeaturedFarms']);
+Route::get('/get-categories', [FarmController::class, 'getCategories']);
 Route::get('/get-near-by-farms', [FarmController::class, 'getNearByFarms']);

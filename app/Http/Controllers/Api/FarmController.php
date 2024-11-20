@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\SaveFarmRequest;
 use App\Http\Requests\Api\StoreFarmRequest;
 use App\Http\Requests\Api\UpdateFarmRequest;
+use App\Models\Category;
 use App\Models\Farm;
 use Exception;
 use Illuminate\Http\Request;
@@ -73,9 +74,24 @@ class FarmController extends Controller
 
             return response()->json([
                 'status_code' => 200,
-                'farm' => $farmArray,
+                'farms' => $farmArray,
                 'base_url_farms' => asset('farm'),
                 'base_url_products' => asset('product'),
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'status_code' => 400,
+                'message' => $e->getMessage(),
+            ], 400);
+        }
+    }
+
+    public function getCategories(){
+        try {
+            $categories = Category::all();
+            return response()->json([
+                'status_code' => 200,
+                'categories' => $categories,    
             ], 200);
         } catch (Exception $e) {
             return response()->json([
@@ -103,7 +119,7 @@ class FarmController extends Controller
             $farms = $farms->get();
             return response()->json([
                 'status_code' => 200,
-                'farm' => $farms,
+                'farms' => $farms,
                 'base_url_farms' => asset('farm'),
                 'base_url_products' => asset('product'),
             ], 200);
@@ -136,7 +152,7 @@ class FarmController extends Controller
                 ->paginate(10); // Paginate the results for efficiency
             return response()->json([
                 'status_code' => 200,
-                'farm' => $farms,
+                'farms' => $farms,
                 'base_url_farms' => asset('farm'),
                 'base_url_products' => asset('product'),
             ], 200);
@@ -182,6 +198,24 @@ class FarmController extends Controller
                 'farms' => $farms,
             ], 200);
         } catch (Exception $e) {
+            return response()->json([
+                'status_code' => 400,
+                'message' => $e->getMessage(),
+            ], 400);
+        }
+    }
+
+    public function deleteFarm(Farm $farm) {
+        try {
+            DB::beginTransaction();
+            $farm->delete();
+            DB::commit();
+            return response()->json([
+                'status_code' => 200,
+                'message' => 'Farm Deleted Successfully',
+            ], 200);
+        } catch (Exception $e) {
+            DB::rollBack();
             return response()->json([
                 'status_code' => 400,
                 'message' => $e->getMessage(),

@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class Farm extends Model
 {
@@ -31,8 +32,22 @@ class Farm extends Model
         'image',
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($farm) {
+            $farm->products()->delete();
+            $farm->categories()->detach();
+            $farm->payments()->detach();
+            $farm->days()->detach();
+        });
+    }
+
+
     public static function storeFarm(array $data)
     {
+        Log::info('Farm data received', $data);
         // dd($data);
         $farm = new self;
         $data['image'] = $farm->uploadImage($data['request'], 'image', 'farm');
@@ -118,6 +133,7 @@ class Farm extends Model
             $user->savedFarms()->detach([$data['farm_id']]);
         }
     }
+
     public static function farmData($data)
     {
         $farmArray = [
