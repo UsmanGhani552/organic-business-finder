@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Mail\SendOtpMail;
 use App\Traits\ImageUploadTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -11,6 +12,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable
@@ -27,7 +29,9 @@ class User extends Authenticatable
         'email',
         'password',
         'type',
-        'image'
+        'image',
+        'otp',
+        'otp_expires_at'
         
     ];
 
@@ -73,13 +77,19 @@ class User extends Authenticatable
 
     public static function changePassword($user,array $data): void{
         $data['password'] = Hash::make($data['password']);
-        $user->update($data);
+        $user->update(['password'=> $data['password']]);
     }
 
     public static function editImage($user): void{
-        // dd($data['image']);
         $uploadedImagePath = (new self)->uploadImage(request(),'image','user',"user/{$user->image}" , $user->image);
         $user->update(['image' => $uploadedImagePath]);
+    }
+
+    public static function saveOtp($user,$otp): void { 
+        $user->update([
+            'otp' => $otp,
+            'otp_expires_at' => now()->addMinutes(5),
+        ]);
     }
 
     public function farms() {

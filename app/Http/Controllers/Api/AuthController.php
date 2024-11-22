@@ -33,8 +33,6 @@ class AuthController extends Controller
         }
     }
 
-        
-
     public function login(LoginUserRequest $request)
     {
         try {

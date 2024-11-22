@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\FarmController;
+use App\Http\Controllers\Api\PasswordResetController;
 use App\Http\Controllers\Api\UserController;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -24,6 +25,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/send-otp', [PasswordResetController::class, 'sendOtp']);
+Route::post('/verify-otp', [PasswordResetController::class, 'verifyOtp']);
+Route::post('/reset-password', [PasswordResetController::class, 'resetPassword']);
 
 // Route::post('login', [RegisterController::class, 'login']);
 

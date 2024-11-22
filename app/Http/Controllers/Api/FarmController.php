@@ -107,7 +107,7 @@ class FarmController extends Controller
             $farm_name = $request->query('farm_name');
             $category_id = $request->query('category_id');
 
-            $farms = Farm::with('products');
+            $farms = Farm::with('categories', 'days', 'payments', 'products');
             if ($farm_name) {
                 $farms->where('name', 'LIKE', "%$farm_name%");
             }
@@ -137,7 +137,7 @@ class FarmController extends Controller
             $latitude = $request->query('latitude');
             $longitude = $request->query('longitude');
 
-            $farms = Farm::with('products')
+            $farms = Farm::with('categories', 'days', 'payments', 'products')
                 ->selectRaw("
                 *,
                 (6371 * acos(cos(radians($latitude)) * 
@@ -188,7 +188,7 @@ class FarmController extends Controller
         try {
             $user = auth()->user();
             $farms = $user->savedFarms()
-                ->with('categories') 
+                ->with('categories', 'days', 'payments', 'products') 
                 ->get()
                 ->groupBy(function ($farm) {
                     return $farm->categories->first()->name ?? 'Uncategorized'; 
