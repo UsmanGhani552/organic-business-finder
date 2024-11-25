@@ -32,7 +32,7 @@ class User extends Authenticatable
         'image',
         'otp',
         'otp_expires_at'
-        
+
     ];
 
     /**
@@ -55,44 +55,51 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    public static function registerUser($data){
+    public static function registerUser($data)
+    {
 
         $data['password'] = Hash::make($data['password']);
         $user = self::create($data);
         return $user;
     }
 
-    public function saveFcmToken($fcmToken){
+    public function saveFcmToken($fcmToken)
+    {
         $this->deviceTokens()->updateOrCreate(
             ['fcm_token' => $fcmToken],
             ['user_id' => $this->id],
         );
     }
 
-    public static function editProfile($user,array $data){
-        $data['image'] = (new self)->uploadImage(request(),'image','user',"user/{$user->image}" , $user->image);
-        $user->update($data); 
+    public static function editProfile($user, array $data)
+    {
+        $data['image'] = (new self)->uploadImage(request(), 'image', 'user', "user/{$user->image}", $user->image);
+        $user->update($data);
         return $user->fresh();
     }
 
-    public static function changePassword($user,array $data): void{
+    public static function changePassword($user, array $data): void
+    {
         $data['password'] = Hash::make($data['password']);
-        $user->update(['password'=> $data['password']]);
+        $user->update(['password' => $data['password']]);
     }
 
-    public static function editImage($user): void{
-        $uploadedImagePath = (new self)->uploadImage(request(),'image','user',"user/{$user->image}" , $user->image);
+    public static function editImage($user): void
+    {
+        $uploadedImagePath = (new self)->uploadImage(request(), 'image', 'user', "user/{$user->image}", $user->image);
         $user->update(['image' => $uploadedImagePath]);
     }
 
-    public static function saveOtp($user,$otp): void { 
+    public static function saveOtp($user, $otp): void
+    {
         $user->update([
             'otp' => $otp,
             'otp_expires_at' => now()->addMinutes(5),
         ]);
     }
 
-    public function farms() {
+    public function farms()
+    {
         return $this->hasMany(Farm::class);
     }
 
@@ -101,7 +108,10 @@ class User extends Authenticatable
         return $this->hasMany(DeviceToken::class);
     }
 
-    public function savedFarms(){
-        return $this->belongsToMany(Farm::class,'saved_farms');
+    public function savedFarms()
+    {
+        return $this->belongsToMany(Farm::class, 'saved_farms')
+            ->withPivot('save') // Include the 'save' attribute
+            ->withTimestamps();;
     }
 }

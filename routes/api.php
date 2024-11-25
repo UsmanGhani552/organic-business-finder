@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\FarmController;
 use App\Http\Controllers\Api\PasswordResetController;
 use App\Http\Controllers\Api\UserController;
@@ -50,6 +51,10 @@ Route::middleware('auth:api')->group( function () {
 
     Route::post('/toggle-saved-farm', [FarmController::class, 'toggleSavedFarm']);
     Route::get('/get-saved-farms', [FarmController::class, 'getSavedFarms']);
+
+    Route::get('/chats/{userId}', [ChatController::class, 'fetchChats']); // Fetch chat messages
+    Route::post('/chats/send', [ChatController::class, 'sendMessage']); // Send message
+    Route::get('/chats/unread/{userId}', [ChatController::class, 'unreadCount']); // Unread messages
 });
 Route::get('/get-featured-farms', [FarmController::class, 'getFeaturedFarms']);
 Route::get('/get-categories', [FarmController::class, 'getCategories']);

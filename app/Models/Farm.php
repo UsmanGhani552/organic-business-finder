@@ -128,9 +128,13 @@ class Farm extends Model
     public static function toggleSavedFarm(array $data, $user, $save): void
     {
         if ($save) {
-            $user->savedFarms()->syncWithoutDetaching([$data['farm_id']]);
+            $user->savedFarms()->syncWithoutDetaching([
+                $data['farm_id'] => ['save' => true], 
+            ]);
         } else {
-            $user->savedFarms()->detach([$data['farm_id']]);
+            $user->savedFarms()->sync([
+                $data['farm_id'] => ['save' => false],
+            ]);
         }
     }
 

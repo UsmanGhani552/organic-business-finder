@@ -190,6 +190,10 @@ class FarmController extends Controller
             $farms = $user->savedFarms()
                 ->with('categories', 'days', 'payments', 'products') 
                 ->get()
+                ->map(function ($farm) {
+                    $farm->is_save = $farm->pivot->save; // Add the 'save' attribute to each farm
+                    return $farm;
+                })
                 ->groupBy(function ($farm) {
                     return $farm->categories->first()->name ?? 'Uncategorized'; 
                 });
