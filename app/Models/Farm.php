@@ -6,6 +6,7 @@ use App\Traits\ImageUploadTrait;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
@@ -43,7 +44,22 @@ class Farm extends Model
             $farm->days()->detach();
         });
     }
-
+    
+    public static function getFarmRelatedData($farms,$key = 1)
+    {
+        $farmArrays= $farms->toArray();
+        $relation = $key === 1 ? [$farmArrays] : $farmArrays;
+        foreach ($relation as &$value) {
+            foreach ($value as &$farm) {
+                $farm['categories'] = Arr::pluck($farm['categories'], 'name');
+                $farm['days'] = Arr::pluck($farm['days'], 'name');
+                $farm['payments'] = Arr::pluck($farm['payments'], 'name');
+                $farm['is_save'] = $farm['pivot']['save'] ?? 0; // Extract 'save' from pivot
+            }
+           
+        }
+        return $key === 1 ? $relation[0] : $relation;
+    }
 
     public static function storeFarm(array $data)
     {
@@ -129,12 +145,10 @@ class Farm extends Model
     {
         if ($save) {
             $user->savedFarms()->syncWithoutDetaching([
-                $data['farm_id'] => ['save' => true], 
+                $data['farm_id'] => ['save' => true],
             ]);
         } else {
-            $user->savedFarms()->sync([
-                $data['farm_id'] => ['save' => false],
-            ]);
+            $user->savedFarms()->detach([$data['farm_id']]);
         }
     }
 
@@ -169,6 +183,10 @@ class Farm extends Model
     public function syncPayments(array $payments)
     {
         $this->payments()->sync($payments);
+    }
+
+    public function users() {
+        return $this->belongsTo(User::class,'user_id');
     }
 
     public function categories()

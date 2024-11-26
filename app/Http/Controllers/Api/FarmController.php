@@ -63,14 +63,13 @@ class FarmController extends Controller
     public function getFarms()
     {
         try {
-            $farms = Farm::with('categories', 'days', 'payments', 'products')->where('user_id', Auth::user()->id)->get();
-            $farmArray = $farms->toArray();
+            $user = auth::user();
+            $farms = $user->savedFarms()
+            ->with('categories', 'days', 'payments', 'products') 
+            ->get();
 
-            foreach ($farmArray as &$farm) {
-                $farm['categories'] = Arr::pluck($farm['categories'], 'name');
-                $farm['days'] = Arr::pluck($farm['days'], 'name');
-                $farm['payments'] = Arr::pluck($farm['payments'], 'name');
-            }
+
+            $farmArray = Farm::getFarmRelatedData($farms);
 
             return response()->json([
                 'status_code' => 200,
@@ -148,11 +147,12 @@ class FarmController extends Controller
             ")
                 // Filter farms by distance (within a max distance)
                 ->having("distance", "<", 10000)
-                ->orderBy("distance")
-                ->paginate(10); // Paginate the results for efficiency
+                ->orderBy("distance")->get(); // Paginate the results for efficiency
+                $farmArray = Farm::getFarmRelatedData($farms);
             return response()->json([
                 'status_code' => 200,
-                'farms' => $farms,
+                // 'farms' => $farms,
+                'farms' => $farmArray,
                 'base_url_farms' => asset('farm'),
                 'base_url_products' => asset('product'),
             ], 200);
@@ -190,16 +190,14 @@ class FarmController extends Controller
             $farms = $user->savedFarms()
                 ->with('categories', 'days', 'payments', 'products') 
                 ->get()
-                ->map(function ($farm) {
-                    $farm->is_save = $farm->pivot->save; // Add the 'save' attribute to each farm
-                    return $farm;
-                })
                 ->groupBy(function ($farm) {
                     return $farm->categories->first()->name ?? 'Uncategorized'; 
                 });
+                $farmArray = Farm::getFarmRelatedData($farms,2);
             return response()->json([
                 'status_code' => 200,
-                'farms' => $farms,
+                'farms' => $farmArray,
+                // 'farms' => $farms,
             ], 200);
         } catch (Exception $e) {
             return response()->json([
