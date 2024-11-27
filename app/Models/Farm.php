@@ -54,7 +54,9 @@ class Farm extends Model
                 $farm['categories'] = Arr::pluck($farm['categories'], 'name');
                 $farm['days'] = Arr::pluck($farm['days'], 'name');
                 $farm['payments'] = Arr::pluck($farm['payments'], 'name');
-                $farm['is_save'] = $farm['pivot']['save'] ?? 0; // Extract 'save' from pivot
+                if($key == 2){
+                    $farm['is_save'] = $farm['pivot']['save'] ?? 0; 
+                }
             }
            
         }

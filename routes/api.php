@@ -47,6 +47,9 @@ Route::middleware('auth:api')->group( function () {
     Route::post('/store-farm', [FarmController::class, 'storeFarm']);
     Route::post('/update-farm/{farm}', [FarmController::class, 'updateFarm']);
     Route::get('/get-farms', [FarmController::class, 'getFarms']);
+    Route::get('/get-featured-farms', [FarmController::class, 'getFeaturedFarms']);
+    Route::get('/get-categories', [FarmController::class, 'getCategories']);
+    Route::get('/get-near-by-farms', [FarmController::class, 'getNearByFarms']);
     Route::get('/delete-farm/{farm}', [FarmController::class, 'deleteFarm']);
 
     Route::post('/toggle-saved-farm', [FarmController::class, 'toggleSavedFarm']);
@@ -56,6 +59,3 @@ Route::middleware('auth:api')->group( function () {
     Route::post('/chats/send', [ChatController::class, 'sendMessage']); // Send message
     Route::get('/chats/unread/{userId}', [ChatController::class, 'unreadCount']); // Unread messages
 });
-Route::get('/get-featured-farms', [FarmController::class, 'getFeaturedFarms']);
-Route::get('/get-categories', [FarmController::class, 'getCategories']);
-Route::get('/get-near-by-farms', [FarmController::class, 'getNearByFarms']);

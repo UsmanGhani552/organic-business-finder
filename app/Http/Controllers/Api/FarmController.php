@@ -65,8 +65,8 @@ class FarmController extends Controller
         try {
             $user = auth::user();
             $farms = $user->savedFarms()
-            ->with('categories', 'days', 'payments', 'products') 
-            ->get();
+                ->with('categories', 'days', 'payments', 'products')
+                ->get();
 
 
             $farmArray = Farm::getFarmRelatedData($farms);
@@ -85,12 +85,13 @@ class FarmController extends Controller
         }
     }
 
-    public function getCategories(){
+    public function getCategories()
+    {
         try {
             $categories = Category::all();
             return response()->json([
                 'status_code' => 200,
-                'categories' => $categories,    
+                'categories' => $categories,
             ], 200);
         } catch (Exception $e) {
             return response()->json([
@@ -105,20 +106,40 @@ class FarmController extends Controller
         try {
             $farm_name = $request->query('farm_name');
             $category_id = $request->query('category_id');
+            $user = auth()->user();
+            $userId = $user ? $user->id : null; // Null if no user is logged in
 
-            $farms = Farm::with('categories', 'days', 'payments', 'products');
+            $farms = Farm::with('categories', 'days', 'payments', 'products')
+                ->selectRaw("
+                farms.*,
+                CASE 
+                    WHEN saved_farms.user_id = ? THEN 1
+                    ELSE 0
+                END AS is_save
+            ", [$userId]) // Dynamically set userId for the query
+                ->leftJoin('saved_farms', function ($join) use ($userId) {
+                    $join->on('farms.id', '=', 'saved_farms.farm_id')
+                        ->where('saved_farms.user_id', '=', $userId);
+                });
+
+            // Apply farm name filter if provided
             if ($farm_name) {
-                $farms->where('name', 'LIKE', "%$farm_name%");
+                $farms->where('farms.name', 'LIKE', "%$farm_name%");
             }
+
+            // Apply category filter if provided
             if ($category_id) {
                 $farms->whereHas('categories', function ($query) use ($category_id) {
                     $query->where('category_id', $category_id);
                 });
             }
+
+            // Get the filtered and processed farms
             $farms = $farms->get();
+            $farmArray = Farm::getFarmRelatedData($farms);
             return response()->json([
                 'status_code' => 200,
-                'farms' => $farms,
+                'farms' => $farmArray,
                 'base_url_farms' => asset('farm'),
                 'base_url_products' => asset('product'),
             ], 200);
@@ -130,25 +151,35 @@ class FarmController extends Controller
         }
     }
 
+
     public function getNearByFarms(Request $request)
     {
         try {
             $latitude = $request->query('latitude');
             $longitude = $request->query('longitude');
-
+            $user = auth()->user();
+            $userId = $user ? $user->id : null; // Null if no user is logged in
             $farms = Farm::with('categories', 'days', 'payments', 'products')
                 ->selectRaw("
-                *,
+                farms.*,
                 (6371 * acos(cos(radians($latitude)) * 
                 cos(radians(farms.lat)) * 
                 cos(radians(farms.lng) - radians($longitude)) + 
                 sin(radians($latitude)) * 
-                sin(radians(farms.lat)))) AS distance
-            ")
-                // Filter farms by distance (within a max distance)
+                sin(radians(farms.lat)))) AS distance,
+                CASE 
+                    WHEN saved_farms.user_id = ? THEN 1
+                    ELSE 0
+                END AS is_save
+            ", [$userId]) // Pass the user ID to the query
+                ->leftJoin('saved_farms', function ($join) use ($userId) {
+                    $join->on('farms.id', '=', 'saved_farms.farm_id')
+                        ->where('saved_farms.user_id', '=', $userId);
+                })
                 ->having("distance", "<", 10000)
-                ->orderBy("distance")->get(); // Paginate the results for efficiency
-                $farmArray = Farm::getFarmRelatedData($farms);
+                ->orderBy("distance")
+                ->get();
+            $farmArray = Farm::getFarmRelatedData($farms);
             return response()->json([
                 'status_code' => 200,
                 // 'farms' => $farms,
@@ -188,12 +219,12 @@ class FarmController extends Controller
         try {
             $user = auth()->user();
             $farms = $user->savedFarms()
-                ->with('categories', 'days', 'payments', 'products') 
+                ->with('categories', 'days', 'payments', 'products')
                 ->get()
                 ->groupBy(function ($farm) {
-                    return $farm->categories->first()->name ?? 'Uncategorized'; 
+                    return $farm->categories->first()->name ?? 'Uncategorized';
                 });
-                $farmArray = Farm::getFarmRelatedData($farms,2);
+            $farmArray = Farm::getFarmRelatedData($farms, 2);
             return response()->json([
                 'status_code' => 200,
                 'farms' => $farmArray,
@@ -207,7 +238,8 @@ class FarmController extends Controller
         }
     }
 
-    public function deleteFarm(Farm $farm) {
+    public function deleteFarm(Farm $farm)
+    {
         try {
             DB::beginTransaction();
             $farm->delete();

@@ -56,6 +56,7 @@ class PasswordResetController extends Controller
             }
             return response()->json([
                 'status_code' => 200,
+                'user_id' => $user->id,
                 'message' => 'OTP verified successfully',
                 // 'otp' => $otp,
             ], 200);
