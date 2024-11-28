@@ -64,10 +64,9 @@ class FarmController extends Controller
     {
         try {
             $user = auth::user();
-            $farms = $user->savedFarms()
-                ->with('categories', 'days', 'payments', 'products')
+            $farms = Farm::with('categories', 'days', 'payments', 'products')
+                ->where('user_id',$user->id)
                 ->get();
-
 
             $farmArray = Farm::getFarmRelatedData($farms);
 
