@@ -42,7 +42,7 @@ class UpdateFarmRequest extends FormRequest
             'image' => 'image|max:2048', 
             'products' => 'required|array', 
             'products.*.name' => 'required|string',
-            'products.*.price' => 'required|numeric',
+            'products.*.price' => 'required',
             'products.*.image' => 'image|max:2048',
         ];
     }
