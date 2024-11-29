@@ -41,7 +41,7 @@ class StoreFarmRequest extends FormRequest
             'image' => 'required', // Farm image
             'products' => 'required', // of products
             'products.*.name' => 'required|string', // Name of each product
-            'products.*.price' => 'required|numeric', // Price of each product
+            'products.*.price' => 'required', // Price of each product
             'products.*.image' => 'required', // Image of each product
         ];
     }
