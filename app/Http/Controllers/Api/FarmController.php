@@ -175,7 +175,7 @@ class FarmController extends Controller
                     $join->on('farms.id', '=', 'saved_farms.farm_id')
                         ->where('saved_farms.user_id', '=', $userId);
                 })
-                ->having("distance", "<", 10000)
+                ->having("distance", "<", 10)
                 ->orderBy("distance")
                 ->get();
             $farmArray = Farm::getFarmRelatedData($farms);
