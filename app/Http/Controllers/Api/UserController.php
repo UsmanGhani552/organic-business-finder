@@ -102,4 +102,20 @@ class UserController extends Controller
             ], 400);
         }
     }
+    public function getProfile()
+    {
+        try {
+            $user = Auth::user();
+            return response()->json([
+                'status_code' => 200,
+                'user' => $user,
+                'message' => 'Account Removed Successfully',
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'status_code' => 400,
+                'message' => $e->getMessage(),
+            ], 400);
+        }
+    }
 }

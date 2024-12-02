@@ -36,6 +36,7 @@ Route::post('/reset-password', [PasswordResetController::class, 'resetPassword']
 
 Route::middleware('auth:api')->group( function () {
     Route::get('/logout', [AuthController::class, 'logout']);
+    Route::get('/get-profile', [UserController::class, 'getProfile']);
 
     //user
     Route::post('/edit-profile', [UserController::class, 'editProfile']);
