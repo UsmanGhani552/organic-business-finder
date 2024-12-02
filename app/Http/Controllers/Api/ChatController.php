@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\MessageSent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\SendMessageRequest;
 use App\Models\Chat;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ChatController extends Controller
 {
@@ -39,8 +41,12 @@ class ChatController extends Controller
     // Send a message
     public function sendMessage(SendMessageRequest $request)
     {
-        try {            
+        try {     
+            DB::beginTransaction();    
             $chat = Chat::sendMessage($request->validated());
+            // dd($chat);
+            broadcast(new MessageSent($chat))->toOthers();
+            DB::commit();
             return response()->json([
                 'status_code' => 200,
                 'chat' => $chat
@@ -61,7 +67,7 @@ class ChatController extends Controller
 
             $count = Chat::where('receiver_id', $authUserId)
                 ->where('sender_id', $userId)
-                ->where('is_read', false)
+                ->where('is_read', 0)
                 ->count();
 
             return response()->json([

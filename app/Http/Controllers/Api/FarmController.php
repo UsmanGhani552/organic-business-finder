@@ -157,7 +157,7 @@ class FarmController extends Controller
             $latitude = $request->query('latitude');
             $longitude = $request->query('longitude');
             $user = auth()->user();
-            $userId = $user ? $user->id : null; // Null if no user is logged in
+            $userId = $user ? $user->id : null; 
             $farms = Farm::with('categories', 'days', 'payments', 'products')
                 ->selectRaw("
                 farms.*,
@@ -170,7 +170,7 @@ class FarmController extends Controller
                     WHEN saved_farms.user_id = ? THEN 1
                     ELSE 0
                 END AS is_save
-            ", [$userId]) // Pass the user ID to the query
+            ", [$userId])
                 ->leftJoin('saved_farms', function ($join) use ($userId) {
                     $join->on('farms.id', '=', 'saved_farms.farm_id')
                         ->where('saved_farms.user_id', '=', $userId);

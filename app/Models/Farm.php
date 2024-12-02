@@ -124,14 +124,24 @@ class Farm extends Model
 
         if ($data['products']) {
             foreach ($data['products'] as $index => $product) {
-                // dd($data['products']);
+                // Check if the product exists
                 $existingProduct = Product::where('farm_id', $farm->id)
                     ->where('name', $product['name'])
                     ->first();
-
-                $product['image'] = $farm->uploadImage($data['request'], "products.$index.image", 'product', "product/{$existingProduct->image}", $existingProduct->image);
-
-                // Use updateOrCreate to avoid duplicate entries
+        
+                // Determine the old image path if the product exists, otherwise set it to null
+                $oldImagePath = $existingProduct ? "product/{$existingProduct->image}" : null;
+        
+                // Upload the new image or keep the default
+                $product['image'] = $farm->uploadImage(
+                    $data['request'], 
+                    "products.$index.image", 
+                    'product', 
+                    $oldImagePath, 
+                    $existingProduct->image ?? null
+                );
+        
+                // Use updateOrCreate to update or insert the product
                 Product::updateOrCreate(
                     ['farm_id' => $farm->id, 'name' => $product['name']],
                     [
@@ -141,6 +151,7 @@ class Farm extends Model
                 );
             }
         }
+        
         return $farm;
     }
     public static function toggleSavedFarm(array $data, $user, $save): void
