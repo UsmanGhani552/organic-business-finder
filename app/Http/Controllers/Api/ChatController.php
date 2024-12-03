@@ -42,14 +42,12 @@ class ChatController extends Controller
     public function sendMessage(SendMessageRequest $request)
     {
         try {     
-            DB::beginTransaction();    
-            $chat = Chat::sendMessage($request->validated());
-            // dd($chat);
-            broadcast(new MessageSent($chat))->toOthers();
+            DB::beginTransaction();
+            broadcast(new MessageSent($request->validated()))->toOthers();
             DB::commit();
             return response()->json([
                 'status_code' => 200,
-                'chat' => $chat
+                // 'chat' => $chat
             ]);
         } catch (Exception $e) {
             return response()->json([

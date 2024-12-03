@@ -2,3 +2,4 @@
 /.env
 /.htaccess
 /public
+/node_modules

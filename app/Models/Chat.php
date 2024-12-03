@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -12,11 +13,12 @@ class Chat extends Model
 
     protected $fillable = ['sender_id', 'receiver_id', 'message', 'is_read'];
 
-    public static function sendMessage(array $data) {
+    public static function sendMessage($data) {
         $chat = Chat::create([
-            'sender_id' => Auth::id(),
+            'sender_id' => $data['sender_id'],
             'receiver_id' => $data['receiver_id'],
             'message' => $data['message'],
+            'created_at' => Carbon::now()
         ]);
 
         return $chat;

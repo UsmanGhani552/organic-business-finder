@@ -13,26 +13,31 @@ class MessageSent implements ShouldBroadcastNow
     use InteractsWithSockets, SerializesModels;
 
     public $chat;
-
-    public function __construct(Chat $chat)
+    
+    public function __construct($chat)
     {
         $this->chat = $chat;
+        // dd($this->chat);  
     }
 
     public function broadcastOn()
     {
         // Broadcasting on a private channel named chat.{receiver_id}
-        return new PrivateChannel('chat.' . $this->chat->receiver_id);
+        return new PrivateChannel('chat.' . $this->chat['receiver_id']);
     }
 
     public function broadcastWith()
     {
         // Data sent to the client
         return [
-            'message' => $this->chat->message,
-            'sender_id' => $this->chat->sender_id,
-            'receiver_id' => $this->chat->receiver_id,
-            'created_at' => $this->chat->created_at->toDateTimeString(),
+            'message' => $this->chat['message'],
+            'sender_id' => $this->chat['sender_id'],
+            'receiver_id' => $this->chat['receiver_id'],
         ];
+    }
+
+    public function handle()
+    {
+        Chat::sendMessage($this->chat);
     }
 }
