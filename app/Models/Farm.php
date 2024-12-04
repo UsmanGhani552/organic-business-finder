@@ -44,21 +44,20 @@ class Farm extends Model
             $farm->days()->detach();
         });
     }
-    
-    public static function getFarmRelatedData($farms,$key = 1)
+
+    public static function getFarmRelatedData($farms, $key = 1)
     {
-        $farmArrays= $farms->toArray();
+        $farmArrays = $farms->toArray();
         $relation = $key === 1 ? [$farmArrays] : $farmArrays;
         foreach ($relation as &$value) {
             foreach ($value as &$farm) {
                 $farm['categories'] = Arr::pluck($farm['categories'], 'name');
                 $farm['days'] = Arr::pluck($farm['days'], 'name');
                 $farm['payments'] = Arr::pluck($farm['payments'], 'name');
-                if($key == 2){
-                    $farm['is_save'] = $farm['pivot']['save'] ?? 0; 
+                if ($key == 2) {
+                    $farm['is_save'] = $farm['pivot']['save'] ?? 0;
                 }
             }
-           
         }
         return $key === 1 ? $relation[0] : $relation;
     }
@@ -121,37 +120,37 @@ class Farm extends Model
         if ($data['payments']) {
             $farm->payments()->sync($data['payments']);
         }
-
         if ($data['products']) {
             foreach ($data['products'] as $index => $product) {
+                // dd($product);
                 // Check if the product exists
                 $existingProduct = Product::where('farm_id', $farm->id)
-                    ->where('name', $product['name'])
+                    ->where('id', $product['id'])
                     ->first();
-        
-                // Determine the old image path if the product exists, otherwise set it to null
-                $oldImagePath = $existingProduct ? "product/{$existingProduct->image}" : null;
-        
-                // Upload the new image or keep the default
-                $product['image'] = $farm->uploadImage(
-                    $data['request'], 
-                    "products.$index.image", 
-                    'product', 
-                    $oldImagePath, 
-                    $existingProduct->image ?? null
-                );
-        
-                // Use updateOrCreate to update or insert the product
-                Product::updateOrCreate(
-                    ['farm_id' => $farm->id, 'name' => $product['name']],
-                    [
-                        'price' => $product['price'],
-                        'image' => $product['image']
-                    ]
-                );
+                    // Determine the old image path if the product exists, otherwise set it to null
+                    $oldImagePath = $existingProduct ? "product/{$existingProduct->image}" : null;
+
+                    // Upload the new image or keep the default
+                    $product['image'] = $farm->uploadImage(
+                        $data['request'],
+                        "products.$index.image",
+                        'product',
+                        $oldImagePath,
+                        $existingProduct->image ?? null
+                    );
+
+                    // Use updateOrCreate to update or insert the product
+                    Product::updateOrCreate(
+                        ['farm_id' => $farm->id, 'id' => $product['id'] ?? ''],
+                        [
+                            'name' => $product['name'],
+                            'price' => $product['price'],
+                            'image' => $product['image']
+                        ]
+                    );
             }
         }
-        
+
         return $farm;
     }
     public static function toggleSavedFarm(array $data, $user, $save): void
@@ -198,8 +197,9 @@ class Farm extends Model
         $this->payments()->sync($payments);
     }
 
-    public function users() {
-        return $this->belongsTo(User::class,'user_id');
+    public function users()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function categories()

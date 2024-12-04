@@ -41,6 +41,7 @@ class UpdateFarmRequest extends FormRequest
             'payments.*' => 'exists:payments,id', 
             'image' => 'image|max:2048', 
             'products' => 'required|array', 
+            'products.*.id' => 'numeric',
             'products.*.name' => 'required|string',
             'products.*.price' => 'required',
             'products.*.image' => 'image|max:2048',
