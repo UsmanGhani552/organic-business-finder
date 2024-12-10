@@ -59,4 +59,5 @@ Route::middleware('auth:api')->group( function () {
     Route::get('/chats/{userId}', [ChatController::class, 'fetchChats']); // Fetch chat messages
     Route::post('/chats/send', [ChatController::class, 'sendMessage']); // Send message
     Route::get('/chats/unread/{userId}', [ChatController::class, 'unreadCount']); // Unread messages
+    Route::get('/get-my-chats', [ChatController::class, 'getMyChats']); 
 });

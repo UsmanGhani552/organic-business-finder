@@ -8,7 +8,7 @@ window.Echo = new Echo({
     cluster: 'ap1',  // Replace with your app cluster
     forceTLS: true,
 });
-
+const receiverId = 4;
 
 // Listening to a private channel
 window.Echo.private(`chat.${receiverId}`) // receiverId should be the logged-in user's receiver ID

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -11,17 +12,38 @@ class Chat extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['sender_id', 'receiver_id', 'message', 'is_read'];
+    protected $fillable = ['conversation_id', 'sender_id', 'receiver_id', 'message', 'is_read'];
 
-    public static function sendMessage($data) {
-        $chat = Chat::create([
-            'sender_id' => $data['sender_id'],
-            'receiver_id' => $data['receiver_id'],
-            'message' => $data['message'],
-            'created_at' => Carbon::now()
-        ]);
+    public static function sendMessage($data)
+    {
+        try {
+            $conversation = Conversation::where('sender_id', $data['sender_id'])->where('receiver_id', $data['receiver_id'])->first();
+            if (!$conversation) {
+                $conversation = Conversation::create([
+                    'sender_id' => $data['sender_id'],
+                    'receiver_id' => $data['receiver_id'],
+                ]);
+            }
+            // dd($conversation->id);
+            $chat = Chat::create([
+                'sender_id' => $data['sender_id'],
+                'receiver_id' => $data['receiver_id'],
+                'conversation_id' => $conversation->id,
+                'message' => $data['message'],
+                'created_at' => Carbon::now()
+            ]);
+            $conversation->update([
+                'last_message_id' => $chat->id,
+            ]);
 
-        return $chat;
+            return $chat;
+        } catch (Exception $e) {
+            dd($e);
+        }
+    }
+    public function conversation()
+    {
+        return $this->belongsTo(Conversation::class);
     }
     // Relationship with sender
     public function sender()
