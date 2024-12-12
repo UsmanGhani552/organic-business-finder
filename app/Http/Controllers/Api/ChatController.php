@@ -53,7 +53,7 @@ class ChatController extends Controller
             // Fetch conversations with the other user and their last message
             $conversations = Conversation::with('receiver', 'otherUser', 'lastMessage')
                 ->where('sender_id', $authUserId)
-                // ->orWhere('receiver_id', $authUserId)
+                ->orWhere('receiver_id', $authUserId)
                 ->get();
 
             // Add unread count for each conversation
