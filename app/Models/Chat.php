@@ -23,7 +23,7 @@ class Chat extends Model
             })->orWhere(function ($query) use ($data) {
                 $query->where('sender_id', $data['receiver_id'])
                     ->where('receiver_id', $data['sender_id']);
-            })->get()->toArray();
+            })->get();
             $conversation = $conversationBoth->where('sender_id', $data['sender_id'])->first();
             if (!$conversation) {
                 $conversation = Conversation::create([
