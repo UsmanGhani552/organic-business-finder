@@ -45,6 +45,9 @@ class Chat extends Model
             $conversation->update([
                 'last_message_id' => $chat->id,
             ]);
+            $conversation2->update([
+                'last_message_id' => $chat->id,
+            ]);
             $conversation = $conversationBoth->where('sender_id', $data['receiver_id'])->first();
             if($conversation){
                 $conversation->update([
