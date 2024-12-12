@@ -30,6 +30,10 @@ class Chat extends Model
                     'sender_id' => $data['sender_id'],
                     'receiver_id' => $data['receiver_id'],
                 ]);
+                $conversation2 = Conversation::create([
+                    'sender_id' => $data['receiver_id'],
+                    'receiver_id' => $data['sender_id'],
+                ]);
             }
             $chat = Chat::create([
                 'sender_id' => $data['sender_id'],
