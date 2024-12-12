@@ -51,7 +51,7 @@ class ChatController extends Controller
             $authUserId = Auth::id();
 
             // Fetch conversations with the other user and their last message
-            $conversations = Conversation::with('receiver','otherUser', 'lastMessage')
+            $conversations = Conversation::with('receiver', 'otherUser', 'lastMessage')
                 ->where('sender_id', $authUserId)
                 // ->orWhere('receiver_id', $authUserId)
                 ->get();
@@ -86,7 +86,7 @@ class ChatController extends Controller
     {
         try {
             DB::beginTransaction();
-            // broadcast(new MessageSent($request->validated()))->toOthers();
+            broadcast(new MessageSent($request->validated()))->toOthers();
             Chat::sendMessage($request->validated());
             DB::commit();
             return response()->json([
@@ -103,25 +103,20 @@ class ChatController extends Controller
 
     public function handleWebhook(Request $request)
     {
-        $secretKey = env('WEBHOOK_SECRET_KEY');
-        $signature = $request->header('X-Signature'); // Example header, change based on service
-        $payload = $request->getContent(); // Raw request body
+        try {
+            // Log the raw payload for debugging
+            Log::info('Webhook received:', [
+                'headers' => $request->headers->all(),
+                'payload' => $request->getContent()
+            ]);
 
-        // Generate a hash using the payload and secret key
-        $calculatedSignature = hash_hmac('sha256', $payload, $secretKey);
+            // Optionally log or store the received data without checking the signature
+            // Chat::create($request->all());
 
-        // Compare signatures securely
-        if (!hash_equals($calculatedSignature, $signature)) {
-            return response()->json(['error' => 'Invalid signature'], 403);
+            return response()->json(['status' => 'success'], 200);
+        } catch (Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
         }
-
-        // Handle the valid webhook
-        Log::info('Webhook received:', $request->all());
-
-        // Example: Store received data
-        // Chat::create($request->all());
-
-        return response()->json(['status' => 'success'], 200);
     }
 
     // Unread message count

@@ -3,3 +3,8 @@
 /.htaccess
 /public
 /node_modules
+storage/app/*
+public/storage
+public/hot
+storage/*.key
+storage/clockwork
