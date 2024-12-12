@@ -61,3 +61,4 @@ Route::middleware('auth:api')->group( function () {
     Route::get('/chats/unread/{userId}', [ChatController::class, 'unreadCount']); // Unread messages
     Route::get('/get-my-chats', [ChatController::class, 'getMyChats']); 
 });
+Route::post('/handle-webhook', [ChatController::class, 'handleWebhook']); 

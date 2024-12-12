@@ -11,6 +11,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ChatController extends Controller
 {
@@ -98,6 +99,29 @@ class ChatController extends Controller
                 'message' => $e->getMessage(),
             ], 400);
         }
+    }
+
+    public function handleWebhook(Request $request)
+    {
+        $secretKey = env('WEBHOOK_SECRET_KEY');
+        $signature = $request->header('X-Signature'); // Example header, change based on service
+        $payload = $request->getContent(); // Raw request body
+
+        // Generate a hash using the payload and secret key
+        $calculatedSignature = hash_hmac('sha256', $payload, $secretKey);
+
+        // Compare signatures securely
+        if (!hash_equals($calculatedSignature, $signature)) {
+            return response()->json(['error' => 'Invalid signature'], 403);
+        }
+
+        // Handle the valid webhook
+        Log::info('Webhook received:', $request->all());
+
+        // Example: Store received data
+        // Chat::create($request->all());
+
+        return response()->json(['status' => 'success'], 200);
     }
 
     // Unread message count
