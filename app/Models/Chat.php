@@ -25,6 +25,7 @@ class Chat extends Model
                     ->where('receiver_id', $data['sender_id']);
             })->get();
             $conversation = $conversationBoth->where('sender_id', $data['sender_id'])->first();
+            $conversation2 = $conversationBoth->where('sender_id', $data['receiver_id'])->first();
             if (!$conversation) {
                 $conversation = Conversation::create([
                     'sender_id' => $data['sender_id'],
@@ -48,12 +49,12 @@ class Chat extends Model
             $conversation2->update([
                 'last_message_id' => $chat->id,
             ]);
-            $conversation = $conversationBoth->where('sender_id', $data['receiver_id'])->first();
-            if($conversation){
-                $conversation->update([
-                'last_message_id' => $chat->id,
-            ]);
-            }
+            // $conversation = $conversationBoth->where('sender_id', $data['receiver_id'])->first();
+            // if($conversation){
+            //     $conversation->update([
+            //         'last_message_id' => $chat->id,
+            //     ]);
+            // }
 
             return $chat;
         } catch (Exception $e) {
