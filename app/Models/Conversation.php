@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Conversation extends Model
 {
     use HasFactory;
-
+    public $sender_id;
     protected $table = 'conversations';
 
     protected $fillable = [
@@ -24,6 +24,11 @@ class Conversation extends Model
 
     public function otherUser()
     {
-        return $this->belongsTo(User::class, $this->sender_id === auth()->id() ? 'receiver_id' : 'sender_id');
+        return $this->belongsTo(User::class, 'receiver_id');
+    }
+
+    public function receiver()
+    {
+        return $this->belongsTo(User::class,'receiver_id');
     }
 }

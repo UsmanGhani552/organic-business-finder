@@ -17,14 +17,20 @@ class Chat extends Model
     public static function sendMessage($data)
     {
         try {
-            $conversation = Conversation::where('sender_id', $data['sender_id'])->where('receiver_id', $data['receiver_id'])->first();
+            $conversationBoth = Conversation::where(function ($query) use ($data) {
+                $query->where('sender_id', $data['sender_id'])
+                    ->where('receiver_id', $data['receiver_id']);
+            })->orWhere(function ($query) use ($data) {
+                $query->where('sender_id', $data['receiver_id'])
+                    ->where('receiver_id', $data['sender_id']);
+            })->get()->toArray();
+            $conversation = $conversationBoth->where('sender_id', $data['sender_id'])->first();
             if (!$conversation) {
                 $conversation = Conversation::create([
                     'sender_id' => $data['sender_id'],
                     'receiver_id' => $data['receiver_id'],
                 ]);
             }
-            // dd($conversation->id);
             $chat = Chat::create([
                 'sender_id' => $data['sender_id'],
                 'receiver_id' => $data['receiver_id'],
@@ -35,6 +41,12 @@ class Chat extends Model
             $conversation->update([
                 'last_message_id' => $chat->id,
             ]);
+            $conversation = $conversationBoth->where('sender_id', $data['receiver_id'])->first();
+            if($conversation){
+                $conversation->update([
+                'last_message_id' => $chat->id,
+            ]);
+            }
 
             return $chat;
         } catch (Exception $e) {

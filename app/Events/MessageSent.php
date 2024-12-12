@@ -31,7 +31,7 @@ class MessageSent implements ShouldBroadcastNow
     
     public function broadcastWith()
     {
-        Chat::sendMessage($this->chat);
+        
         // Data sent to the client
         return [
             'message' => $this->chat['message'],

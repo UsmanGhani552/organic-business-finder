@@ -50,7 +50,7 @@ class ChatController extends Controller
             $authUserId = Auth::id();
 
             // Fetch conversations with the other user and their last message
-            $conversations = Conversation::with('otherUser', 'lastMessage')
+            $conversations = Conversation::with('receiver','otherUser', 'lastMessage')
                 ->where('sender_id', $authUserId)
                 // ->orWhere('receiver_id', $authUserId)
                 ->get();
@@ -85,7 +85,8 @@ class ChatController extends Controller
     {
         try {
             DB::beginTransaction();
-            broadcast(new MessageSent($request->validated()))->toOthers();
+            // broadcast(new MessageSent($request->validated()))->toOthers();
+            Chat::sendMessage($request->validated());
             DB::commit();
             return response()->json([
                 'status_code' => 200,
