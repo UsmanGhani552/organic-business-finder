@@ -2,7 +2,7 @@ import express from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
 import axios from 'axios';
-require('dotenv').config();
+import dotenv from 'dotenv';
 
 const app = express();
 const server = http.createServer(app);
@@ -25,7 +25,7 @@ io.on('connection', (socket) => {
         const baseUrl = process.env.BASE_URL;
         // Send the message data to the Laravel backend for database insertion
         try {
-            const response = await axios.post(`${baseUrl}/api/chats/send`, {
+            const response = await axios.post(`https://organic-business-finder.koderspedia.net/api/chats/send`, {
                 sender_id: data.sender_id,
                 receiver_id: data.receiver_id,
                 message: data.message
@@ -46,6 +46,6 @@ io.on('connection', (socket) => {
 });
 
 // Start the server
-server.listen(3000, () => {
-    console.log('Socket.IO server is running on http://localhost:3000');
+server.listen(3000, '0.0.0.0', () => {
+    console.log('Socket.IO server is running on https://organic-business-finder.koderspedia.net:3000');
 });

@@ -20,7 +20,7 @@
 
     <script>
         // Connect to the Socket.IO server
-        const socket = io('http://localhost:3000'); // Replace with your Node.js server address
+        const socket = io('https://organic-business-finder.koderspedia.net:3000');
 
         const sender_id = 3; // Set sender's ID dynamically (e.g., from your Laravel session)
         const receiver_id = 4; // Set receiver's ID dynamically (e.g., the recipient of the message)
