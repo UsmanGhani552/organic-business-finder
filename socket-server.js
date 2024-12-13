@@ -2,6 +2,7 @@ import express from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
 import axios from 'axios';
+require('dotenv').config();
 
 const app = express();
 const server = http.createServer(app);
@@ -21,10 +22,10 @@ io.on('connection', (socket) => {
     // Listen for messages from clients
     socket.on('message', async (data) => {
         console.log('Message from client:', data);
-        
+        const baseUrl = process.env.BASE_URL;
         // Send the message data to the Laravel backend for database insertion
         try {
-            const response = await axios.post('http://organic-product-finder.test/api/chats/send', {
+            const response = await axios.post(`${baseUrl}/api/chats/send`, {
                 sender_id: data.sender_id,
                 receiver_id: data.receiver_id,
                 message: data.message
