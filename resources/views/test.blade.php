@@ -3,56 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Direct Event Trigger</title>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pusher/7.2.0/pusher.min.js"></script>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <title>Socket.IO Chat</title>
+    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
 </head>
 <body>
-    <h1>Trigger Message Event</h1>
-    <button id="sendMessage">Send Message</button>
+    <h1>Socket.IO Chat</h1>
+
+    <div id="chatBox">
+        <!-- Chat messages will be appended here -->
+    </div>
+
+    <form id="chatForm">
+        <input type="text" id="messageInput" placeholder="Type your message here..." required>
+        <button type="submit">Send</button>
+    </form>
 
     <script>
-        console.log(window.Echo);
-        // Initialize Pusher with your Pusher key and cluster
-        const pusher = new Pusher('d86cdeb92a26c70836eb', {
-            cluster: 'ap1', // Your Pusher cluster
-            forceTLS: true
+        // Connect to the Socket.IO server
+        const socket = io('http://localhost:3000'); // Replace with your Node.js server address
+
+        const sender_id = 3; // Set sender's ID dynamically (e.g., from your Laravel session)
+        const receiver_id = 4; // Set receiver's ID dynamically (e.g., the recipient of the message)
+
+        // Listen for incoming messages
+        socket.on('message', (data) => {
+            const chatBox = document.getElementById('chatBox');
+            
+            // Format the chat message to show both sender and receiver
+            const newMessage = `<p><strong>Sender (ID: ${data.sender_id})</strong> to <strong>Receiver (ID: ${data.receiver_id})</strong>: ${data.message}</p>`;
+            
+            chatBox.innerHTML += newMessage; // Display message in the chat box
         });
 
-        // Initialize Echo with Pusher
-        window.Echo = new Echo({
-            broadcaster: 'pusher',
-            key: 'd86cdeb92a26c70836eb', // Pusher app key
-            cluster: 'ap1', // Pusher cluster
-            forceTLS: true
-        , });
+        // Handle form submission
+        document.getElementById('chatForm').addEventListener('submit', (event) => {
+            event.preventDefault();
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value;
 
-        document.getElementById('sendMessage').addEventListener('click', function() {
-            // Sample chat data
-            const chat = {
-                sender_id: 3, // Replace with actual sender ID
-                receiver_id: 4, // Replace with actual receiver ID
-                message: 'Hello from frontend!' // Message to send
-            };
-
-            // Trigger the event directly through Pusher
-            pusher.trigger('chat.' + chat.receiver_id, 'MessageSent', {
-                message: chat.message
-                , sender_id: chat.sender_id
-                , receiver_id: chat.receiver_id
+            // Send the message to the server
+            socket.emit('message', {
+                sender_id: sender_id,
+                receiver_id: receiver_id,
+                message: message
             });
 
-            console.log('Message triggered from frontend');
+            // Optionally, add the message to your chat box immediately
+            const chatBox = document.getElementById('chatBox');
+            const myMessage = `<p><strong>You (Sender ID: ${sender_id})</strong> to <strong>Receiver (ID: ${receiver_id})</strong>: ${message}</p>`;
+            chatBox.innerHTML += myMessage;
+
+            // Clear the input field
+            messageInput.value = '';
         });
-
-        // Listening for the MessageSent event broadcasted on the channel
-        window.Echo.private('chat.4') // Replace with actual receiver ID
-            .listen('MessageSent', (event) => {
-                console.log('Message received:', event);
-                // Handle the incoming message (e.g., display it in the chat)
-            });
-
     </script>
 </body>
 </html>

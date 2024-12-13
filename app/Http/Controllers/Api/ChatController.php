@@ -80,13 +80,12 @@ class ChatController extends Controller
         }
     }
 
-
     // Send a message
     public function sendMessage(SendMessageRequest $request)
     {
         try {
             DB::beginTransaction();
-            broadcast(new MessageSent($request->validated()))->toOthers();
+            // broadcast(new MessageSent($request->validated()))->toOthers();
             Chat::sendMessage($request->validated());
             DB::commit();
             return response()->json([
