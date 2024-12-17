@@ -50,24 +50,22 @@ class ChatController extends Controller
         try {
             $authUserId = Auth::id();
 
-            // Fetch conversations with the other user and their last message
             $conversations = Conversation::with('receiver', 'otherUser', 'lastMessage')
                 ->where('sender_id', $authUserId)
-                // ->orWhere('receiver_id', $authUserId)
-                ->get();
+                ->orderBy('last_message_id','desc')->get();
+                // dd($conversations);
 
-            // Add unread count for each conversation
             $conversations->each(function ($conversation) use ($authUserId) {
-                $otherUserId = $conversation->sender_id === $authUserId
-                    ? $conversation->receiver_id
-                    : $conversation->sender_id;
+                // dd($conversation['sender_id']);
+                $otherUserId = $conversation['sender_id'] === $authUserId
+                    ? $conversation['receiver_id']
+                    : $conversation['sender_id'];
 
                 $conversation->unread_count = Chat::where('receiver_id', $authUserId)
                     ->where('sender_id', $otherUserId)
-                    ->where('is_read', 0) // Count only unread messages
+                    ->where('is_read', 0) 
                     ->count();
             });
-
             return response()->json([
                 'status_code' => 200,
                 'chats' => $conversations,
@@ -85,7 +83,7 @@ class ChatController extends Controller
     {
         try {
             DB::beginTransaction();
-            // broadcast(new MessageSent($request->validated()))->toOthers();
+            broadcast(new MessageSent($request->validated()))->toOthers();
             Chat::sendMessage($request->validated());
             DB::commit();
             return response()->json([
@@ -127,6 +125,27 @@ class ChatController extends Controller
             // dd($authUserId);
             $count = Chat::where('receiver_id', $authUserId)
                 ->where('sender_id', $userId)
+                ->where('is_read', 1)
+                ->count();
+
+            return response()->json([
+                'status_code' => 200,
+                'unread_count' => $count
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'status_code' => 400,
+                'message' => $e->getMessage(),
+            ], 400);
+        }
+    }
+    public function totalUnreadCount()
+    {
+        try {
+            // $user_id = intval($userId);
+            $authUserId = Auth::id();
+            // dd($authUserId);
+            $count = Chat::where('receiver_id', $authUserId)
                 ->where('is_read', 0)
                 ->count();
 
@@ -141,4 +160,6 @@ class ChatController extends Controller
             ], 400);
         }
     }
+    
+    
 }

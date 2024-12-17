@@ -104,6 +104,7 @@ class FarmController extends Controller
     {
         try {
             $farm_name = $request->query('farm_name');
+            $product_name = $request->query('product_name');
             $category_id = $request->query('category_id');
             $user = auth()->user();
             $userId = $user ? $user->id : null; // Null if no user is logged in
@@ -123,7 +124,12 @@ class FarmController extends Controller
 
             // Apply farm name filter if provided
             if ($farm_name) {
-                $farms->where('farms.name', 'LIKE', "%$farm_name%");
+                $farms->where('name', 'LIKE', "%$farm_name%") // Filter by farm name
+                    ->orWhere(function ($query) use ($farm_name) { // OR filter related products
+                        $query->whereHas('products', function ($query) use ($farm_name) {
+                            $query->where('name', 'LIKE', "%$farm_name%");
+                        });
+                    });
             }
 
             // Apply category filter if provided
@@ -132,6 +138,11 @@ class FarmController extends Controller
                     $query->where('category_id', $category_id);
                 });
             }
+            // if ($product_name) {
+            //     $farms->whereHas('products', function ($query) use ($product_name) {
+            //         $query->where('name', $product_name);
+            //     });
+            // }
 
             // Get the filtered and processed farms
             $farms = $farms->get();
