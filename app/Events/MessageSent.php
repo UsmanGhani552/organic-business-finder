@@ -37,6 +37,7 @@ class MessageSent implements ShouldBroadcastNow
             'message' => $this->chat['message'],
             'sender_id' => $this->chat['sender_id'],
             'receiver_id' => $this->chat['receiver_id'],
+            'created_at' => $this->chat['created_at'],
         ];
     }
     

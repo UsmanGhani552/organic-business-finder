@@ -83,8 +83,8 @@ class ChatController extends Controller
     {
         try {
             DB::beginTransaction();
-            broadcast(new MessageSent($request->validated()))->toOthers();
-            Chat::sendMessage($request->validated());
+            $chat = Chat::sendMessage($request->validated());
+            broadcast(new MessageSent($chat))->toOthers();
             DB::commit();
             return response()->json([
                 'status_code' => 200,
