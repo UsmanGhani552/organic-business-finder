@@ -8,6 +8,7 @@ use App\Http\Requests\Api\StoreFarmRequest;
 use App\Http\Requests\Api\UpdateFarmRequest;
 use App\Models\Category;
 use App\Models\Farm;
+use App\Services\FirebaseService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -22,6 +23,13 @@ class FarmController extends Controller
             DB::beginTransaction();
             $validated_data = array_merge($request->validated(), ['request' => $request]);
             $farm = Farm::storeFarm($validated_data);
+            $user = auth()->user();
+            $deviceTokens = Arr::pluck($user->deviceTokens, 'fcm_token');
+            $title = "Farm Created";
+            $body = "Congratulations! Your listing is now live.";
+            $firebaseService = app(FirebaseService::class);
+            $firebaseService->sendNotificationToMultipleDevices($deviceTokens, $title, $body);
+            // dd($res);
             DB::commit();
             $farm->load('products');
             return response()->json([

@@ -56,10 +56,11 @@ Route::middleware('auth:api')->group( function () {
     Route::post('/toggle-saved-farm', [FarmController::class, 'toggleSavedFarm']);
     Route::get('/get-saved-farms', [FarmController::class, 'getSavedFarms']);
 
+    Route::post('/chats/send', [ChatController::class, 'sendMessage']); // Send message
     Route::get('/chats/{userId}', [ChatController::class, 'fetchChats']); // Fetch chat messages
     Route::get('/chats/unread/{userId}', [ChatController::class, 'unreadCount']); // Unread messages
     Route::get('/get-my-chats', [ChatController::class, 'getMyChats']); 
     Route::get('/total-unread-count', [ChatController::class, 'totalUnreadCount']); 
 });
-Route::post('/chats/send', [ChatController::class, 'sendMessage']); // Send message
 Route::post('/handle-webhook', [ChatController::class, 'handleWebhook']); 
+Route::post('/send-notification', [AuthController::class, 'sendNotification']); 

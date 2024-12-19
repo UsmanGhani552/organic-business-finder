@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AuthController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,3 +19,5 @@ Route::get('/', function () {
 });
 
 Route::view('/test','test');
+Route::get('/test-not', [AuthController::class, 'showForm'])->name('firebase.showForm');
+Route::post('/test-not', [AuthController::class, 'sendNotification'])->name('firebase.sendNotification');

@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Services\FirebaseService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 
 class Chat extends Model
@@ -17,6 +19,8 @@ class Chat extends Model
     public static function sendMessage($data)
     {
         try {
+            $user = auth()->user();
+            $deviceTokens = Arr::pluck($user->deviceTokens, 'fcm_token');
             $conversationBoth = Conversation::where(function ($query) use ($data) {
                 $query->where('sender_id', $data['sender_id'])
                     ->where('receiver_id', $data['receiver_id']);
@@ -27,6 +31,8 @@ class Chat extends Model
             $conversation = $conversationBoth->where('sender_id', $data['sender_id'])->first();
             $conversation2 = $conversationBoth->where('sender_id', $data['receiver_id'])->first();
             if (!$conversation) {
+                $title = "A {$user->type} sends a message.";
+                $body = "Hi, you have a new inquiry from {$user->name}. Tap to reply.";
                 $conversation = Conversation::create([
                     'sender_id' => $data['sender_id'],
                     'receiver_id' => $data['receiver_id'],
@@ -35,7 +41,13 @@ class Chat extends Model
                     'sender_id' => $data['receiver_id'],
                     'receiver_id' => $data['sender_id'],
                 ]);
+            } else {
+                $title = $user->name ?? explode('@',$user->email)[0];
+                $body = $data['message'];
             }
+            $firebaseService = app(FirebaseService::class);
+            $res = $firebaseService->sendNotificationToMultipleDevices($deviceTokens, $title, $body);
+            // dd($res);
             $chat = Chat::create([
                 'sender_id' => $data['sender_id'],
                 'receiver_id' => $data['receiver_id'],
@@ -49,13 +61,6 @@ class Chat extends Model
             $conversation2->update([
                 'last_message_id' => $chat->id,
             ]);
-            // $conversation = $conversationBoth->where('sender_id', $data['receiver_id'])->first();
-            // if($conversation){
-            //     $conversation->update([
-            //         'last_message_id' => $chat->id,
-            //     ]);
-            // }
-
             return $chat;
         } catch (Exception $e) {
             dd($e);
