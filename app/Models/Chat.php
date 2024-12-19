@@ -42,7 +42,7 @@ class Chat extends Model
                     'receiver_id' => $data['sender_id'],
                 ]);
             } else {
-                $title = $user->name ?? explode('@',$user->email)[0];
+                $title = $user->name ?? explode('@',$user->email)[0] . " Sends a message";
                 $body = $data['message'];
             }
             $firebaseService = app(FirebaseService::class);
