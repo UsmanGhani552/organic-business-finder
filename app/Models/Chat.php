@@ -20,7 +20,7 @@ class Chat extends Model
     {
         try {
             $user = User::where('id',$data['receiver_id'])->first();
-            $deviceTokens = Arr::pluck($user->deviceTokens, 'fcm_token');
+            $deviceTokens = $user->deviceTokens;
             $conversationBoth = Conversation::where(function ($query) use ($data) {
                 $query->where('sender_id', $data['sender_id'])
                     ->where('receiver_id', $data['receiver_id']);
@@ -46,7 +46,7 @@ class Chat extends Model
                 $body = $data['message'];
             }
             $firebaseService = app(FirebaseService::class);
-            $res = $firebaseService->sendNotificationToMultipleDevices($deviceTokens, $title, $body , $user->id);
+            $res = $firebaseService->sendNotificationToMultipleDevices($deviceTokens, $title, $body);
             // dd($res);
             $chat = Chat::create([
                 'sender_id' => $data['sender_id'],

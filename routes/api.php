@@ -67,4 +67,4 @@ Route::middleware('auth:api')->group( function () {
     Route::get('/get-notifications', [NotificationController::class, 'getNotifications']); 
 });
 Route::post('/handle-webhook', [ChatController::class, 'handleWebhook']); 
-Route::post('/send-notification', [AuthController::class, 'sendNotification']); 
+Route::post('/send-notification', [NotificationController::class, 'sendNotification']); 

@@ -24,12 +24,11 @@ class FarmController extends Controller
             $validated_data = array_merge($request->validated(), ['request' => $request]);
             $farm = Farm::storeFarm($validated_data);
             $user = auth()->user();
-            $deviceTokens = Arr::pluck($user->deviceTokens, 'fcm_token');
+            $deviceTokens = $user->deviceTokens;
             $title = "Farm Created";
             $body = "Congratulations! Your listing is now live.";
             $firebaseService = app(FirebaseService::class);
-            $firebaseService->sendNotificationToMultipleDevices($deviceTokens, $title, $body ,$user->id);
-            // dd($res);
+            $res = $firebaseService->sendNotificationToMultipleDevices($deviceTokens, $title, $body );
             DB::commit();
             $farm->load('products');
             return response()->json([

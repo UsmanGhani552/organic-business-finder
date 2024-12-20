@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\LoginUserRequest;
 use App\Http\Requests\Api\RegisterUserRequest;
+use App\Models\DeviceToken;
 use App\Models\User;
 use App\Services\FirebaseService;
 use Exception;
@@ -84,59 +85,5 @@ class AuthController extends Controller
         }
     }
 
-    public function sendNotification(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'device_token' => 'required',
-            'title' => 'required',
-            'body' => 'required',
-        ]);
-        if ($validator->fails()) {
-            return response()->json([
-                'errors' => $validator->errors(),
-            ], 422);
-        }
 
-        $deviceToken = $request->input('device_token');
-        $title = $request->input('title');
-        $body = $request->input('body');
-        $data = $request->input('data', []);
-
-        // Resolve FirebaseService directly within the method
-        $firebaseService = app(FirebaseService::class);
-        try {
-            $se = $firebaseService->sendNotification($deviceToken, $title, $body, $data);
-            dd($se);
-            return response()->json(['message' => 'Notification sent successfully']);
-        } catch (NotFound $e) {
-            return response()->json([
-                'message' => 'The device token is not recognized. It might have been unregistered or registered to a different Firebase project.',
-                'error' => $e->getMessage()
-            ], 404);
-        } catch (Exception $e) {
-            // Handle other exceptions
-            Log::error('Error sending Firebase notification: ' . $e->getMessage());
-            return response()->json([
-                'message' => 'An error occurred while sending the notification.',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    public function showForm()
-    {
-        return view('firebase'); // Return the view with the notification form
-    }
-
-    public function saveToken(Request $request)
-    {
-        auth()->user()->update(['device_token'=>$request->token]);
-        return response()->json(['token saved successfully.']);
-
-        // Auth::user()->device_token =  $request->token;
-
-        // Auth::user()->save();
-
-        // return response()->json(['Token successfully stored.']);
-    }
 }
