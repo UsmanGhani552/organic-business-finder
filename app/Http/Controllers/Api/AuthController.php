@@ -11,6 +11,7 @@ use Exception;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Kreait\Firebase\Exception\Messaging\NotFound;
@@ -20,9 +21,10 @@ class AuthController extends Controller
     public function register(RegisterUserRequest $request)
     {
         try {
+            DB::beginTransaction();
             $user = User::registerUser($request->validated());
             $token = $user->createToken('Organic-Business-Finder')->accessToken;
-
+            DB::commit();
             return response()->json([
                 'status_code' => 200,
                 'message' => 'User registered successfully',
@@ -42,7 +44,7 @@ class AuthController extends Controller
         try {
             if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
                 $user = Auth::user();
-                $user->saveFcmToken($request->fcm_token);
+                $user->saveFcmToken($request->fcm_token,$request->device_id);
                 $token = $user->createToken('Organic-Business-Finder')->accessToken;
 
                 return response()->json([

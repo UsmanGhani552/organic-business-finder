@@ -28,7 +28,7 @@ class FarmController extends Controller
             $title = "Farm Created";
             $body = "Congratulations! Your listing is now live.";
             $firebaseService = app(FirebaseService::class);
-            $firebaseService->sendNotificationToMultipleDevices($deviceTokens, $title, $body);
+            $firebaseService->sendNotificationToMultipleDevices($deviceTokens, $title, $body ,$user->id);
             // dd($res);
             DB::commit();
             $farm->load('products');

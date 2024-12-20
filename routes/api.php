@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\FarmController;
+use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\PasswordResetController;
 use App\Http\Controllers\Api\UserController;
 use App\Models\User;
@@ -61,6 +62,9 @@ Route::middleware('auth:api')->group( function () {
     Route::get('/chats/unread/{userId}', [ChatController::class, 'unreadCount']); // Unread messages
     Route::get('/get-my-chats', [ChatController::class, 'getMyChats']); 
     Route::get('/total-unread-count', [ChatController::class, 'totalUnreadCount']); 
+
+    // notifications
+    Route::get('/get-notifications', [NotificationController::class, 'getNotifications']); 
 });
 Route::post('/handle-webhook', [ChatController::class, 'handleWebhook']); 
 Route::post('/send-notification', [AuthController::class, 'sendNotification']); 

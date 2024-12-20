@@ -26,6 +26,7 @@ class RegisterUserRequest extends FormRequest
             'type' => 'required|in:visitor,farmer',
             'password' => 'required|min:8|confirmed', // Ensure password confirmation
             'fcm_token' => 'required',
+            'device_id' => 'required|unique:device_tokens,device_id',
         ];
     }
 }

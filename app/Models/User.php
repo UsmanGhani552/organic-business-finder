@@ -18,6 +18,7 @@ use Laravel\Passport\HasApiTokens;
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, ImageUploadTrait;
+    // public static $user = new self;
 
     /**
      * The attributes that are mass assignable.
@@ -60,14 +61,16 @@ class User extends Authenticatable
 
         $data['password'] = Hash::make($data['password']);
         $user = self::create($data);
+        $user->saveFcmToken($data['fcm_token'],$data['device_id']);
         return $user;
     }
 
-    public function saveFcmToken($fcmToken)
+    public function saveFcmToken($fcmToken,$device_id)
     {
+        // dd($device_id);
         $this->deviceTokens()->updateOrCreate(
-            ['fcm_token' => $fcmToken],
-            ['user_id' => $this->id],
+            ['device_id' => $device_id],
+            ['user_id' => $this->id,'fcm_token' => $fcmToken],
         );
     }
 

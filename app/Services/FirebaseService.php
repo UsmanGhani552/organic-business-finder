@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Notification as ModelsNotification;
 use Illuminate\Support\Facades\Log;
 use Kreait\Firebase\Factory;
 use Kreait\Firebase\Messaging\CloudMessage;
@@ -50,7 +51,7 @@ class FirebaseService
         }
     }
 
-    public function sendNotificationToMultipleDevices(array $deviceTokens, $title, $body, $data = [])
+    public function sendNotificationToMultipleDevices(array $deviceTokens, $title, $body, $userId, $data = [])
     {
         try {
             $notification = Notification::create($title, $body);
@@ -64,7 +65,11 @@ class FirebaseService
 
             // Send all messages
             $responses = $this->messaging->sendAll($messages);
-
+            ModelsNotification::create([
+                'title' => $title,
+                'body' => $body,
+                'user_id' => $userId
+            ]);
             return [
                 'success' => true,
                 'responses' => $responses,
