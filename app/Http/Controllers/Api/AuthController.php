@@ -45,7 +45,7 @@ class AuthController extends Controller
         try {
             if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
                 $user = Auth::user();
-                $user->saveFcmToken($request->fcm_token,$request->device_id);
+                $user->saveFcmToken($request->fcm_token);
                 $token = $user->createToken('Organic-Business-Finder')->accessToken;
 
                 return response()->json([

@@ -61,16 +61,15 @@ class User extends Authenticatable
 
         $data['password'] = Hash::make($data['password']);
         $user = self::create($data);
-        $user->saveFcmToken($data['fcm_token'],$data['device_id']);
+        $user->saveFcmToken($data['fcm_token']);
         return $user;
     }
 
-    public function saveFcmToken($fcmToken,$device_id)
+    public function saveFcmToken($fcmToken)
     {
-        // dd($device_id);
-        $this->deviceTokens()->updateOrCreate(
-            ['device_id' => $device_id],
-            ['user_id' => $this->id,'fcm_token' => $fcmToken],
+        DeviceToken::updateOrCreate(
+            ['fcm_token' => trim($fcmToken)],
+            ['user_id' => $this->id]
         );
     }
 

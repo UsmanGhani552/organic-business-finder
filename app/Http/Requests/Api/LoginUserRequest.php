@@ -24,8 +24,7 @@ class LoginUserRequest extends FormRequest
         return [
             'email' => 'required|email',
             'password' => 'required',
-            'fcm_token' => 'required',
-            'device_id' => 'required',
+            'fcm_token' => 'required'
         ];
     }
 }
