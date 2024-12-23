@@ -49,7 +49,7 @@ class Chat extends Model
                 $body = $data['message'];
             }
             $firebaseService = app(FirebaseService::class);
-            $res = $firebaseService->sendNotificationToMultipleDevices($deviceTokens, $title, $body,$imageUrl);
+            $res = $firebaseService->sendNotificationToMultipleDevices($deviceTokens, $title, $body,$imageUrl,$data);
             // dd($res);
             $chat = Chat::create([
                 'sender_id' => $data['sender_id'],
