@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\DeviceToken;
 use App\Models\Notification;
 use App\Services\FirebaseService;
+use App\Traits\ImageUploadTrait;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -14,6 +15,7 @@ use Kreait\Firebase\Exception\Messaging\NotFound;
 
 class NotificationController extends Controller
 {
+    use ImageUploadTrait;
     public function getNotifications()
     {
         try {
@@ -22,7 +24,8 @@ class NotificationController extends Controller
             $notifications = Notification::where('user_id', $user_id)->get();
             return response()->json([
                 'status_code' => 200,
-                'notifications' => $notifications
+                'notifications' => $notifications,
+                'base_url_notifications' => asset('notifications'),
             ]);
         } catch (Exception $e) {
             return response()->json([
@@ -49,12 +52,13 @@ class NotificationController extends Controller
         $deviceTokens = DeviceToken::all();
         $title = $request->input('title');
         $body = $request->input('body');
+        // $imageUrl = $request->file('imageUrl');
         $data = $request->input('data', []);
-
+        $imageUrl = $this->uploadImage($request,'imageUrl','notifications');
         // Resolve FirebaseService directly within the method
         $firebaseService = app(FirebaseService::class);
         try {
-            $se = $firebaseService->sendNotificationToMultipleDevices($deviceTokens, $title, $body, $data);
+            $se = $firebaseService->sendNotificationToMultipleDevices($deviceTokens, $title, $body,$imageUrl, $data);
             dd($se);
             return response()->json(['message' => 'Notification sent successfully']);
         } catch (NotFound $e) {

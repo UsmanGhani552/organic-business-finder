@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Notification as ModelsNotification;
+use Exception;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Kreait\Firebase\Factory;
@@ -42,7 +43,7 @@ class FirebaseService
                 'message' => 'The device token is not recognized. It might have been unregistered or registered to a different Firebase project.',
                 'error' => $e->getMessage(),
             ];
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Error sending Firebase notification: ' . $e->getMessage());
             return [
                 'success' => false,
@@ -52,10 +53,10 @@ class FirebaseService
         }
     }
 
-    public function sendNotificationToMultipleDevices($deviceTokens, $title, $body, $data = [])
+    public function sendNotificationToMultipleDevices($deviceTokens, $title, $body, $imageUrl = null, $data = [])
     {
         try {
-            $notification = Notification::create($title, $body);
+            $notification = Notification::create($title, $body, asset('notifications/'.$imageUrl));
             $messages = [];
             $uniqueUsers = $deviceTokens->unique('user_id');
             foreach ($deviceTokens as $deviceToken) {
@@ -64,11 +65,13 @@ class FirebaseService
                     ->withNotification($notification)
                     ->withData($data);
             }
+            // dd($messages);
             foreach ($uniqueUsers as $user) {
                 // dd($user->user_id);
                 ModelsNotification::create([
                     'title' => $title,
                     'body' => $body,
+                    'image' => $imageUrl,
                     'user_id' => $user->user_id
                 ]);
             }
@@ -85,7 +88,7 @@ class FirebaseService
                 'message' => 'The device token is not recognized. It might have been unregistered or registered to a different Firebase project.',
                 'error' => $e->getMessage(),
             ];
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Error sending Firebase notification: ' . $e->getMessage());
             return [
                 'success' => false,

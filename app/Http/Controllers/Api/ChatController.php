@@ -90,7 +90,7 @@ class ChatController extends Controller
             DB::commit();
             return response()->json([
                 'status_code' => 200,
-                'message' => 'Message Sent Successfully'
+                'message' => 'Message Sent Successfully',
             ]);
         } catch (Exception $e) {
             return response()->json([

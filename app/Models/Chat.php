@@ -20,6 +20,7 @@ class Chat extends Model
     {
         try {
             $user = User::where('id',$data['receiver_id'])->first();
+            $sender = auth()->user();
             $deviceTokens = $user->deviceTokens;
             $conversationBoth = Conversation::where(function ($query) use ($data) {
                 $query->where('sender_id', $data['sender_id'])
@@ -30,9 +31,11 @@ class Chat extends Model
             })->get();
             $conversation = $conversationBoth->where('sender_id', $data['sender_id'])->first();
             $conversation2 = $conversationBoth->where('sender_id', $data['receiver_id'])->first();
+            $imageUrl = $sender->image;
             if (!$conversation) {
                 $title = "A {$user->type} sends a message.";
                 $body = "Hi, you have a new inquiry from {$user->name}. Tap to reply.";
+                
                 $conversation = Conversation::create([
                     'sender_id' => $data['sender_id'],
                     'receiver_id' => $data['receiver_id'],
@@ -46,7 +49,7 @@ class Chat extends Model
                 $body = $data['message'];
             }
             $firebaseService = app(FirebaseService::class);
-            $res = $firebaseService->sendNotificationToMultipleDevices($deviceTokens, $title, $body);
+            $res = $firebaseService->sendNotificationToMultipleDevices($deviceTokens, $title, $body,$imageUrl);
             // dd($res);
             $chat = Chat::create([
                 'sender_id' => $data['sender_id'],
