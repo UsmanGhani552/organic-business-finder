@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\FarmController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\PasswordResetController;
+use App\Http\Controllers\Api\SocialLoginController;
 use App\Http\Controllers\Api\UserController;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -68,3 +69,6 @@ Route::middleware('auth:api')->group( function () {
 });
 Route::post('/handle-webhook', [ChatController::class, 'handleWebhook']); 
 Route::post('/send-notification', [NotificationController::class, 'sendNotification']); 
+Route::post('/login/apple', [SocialLoginController::class, 'login']);
+Route::post('/social/login', [SocialLoginController::class, 'socialLogin']);
+

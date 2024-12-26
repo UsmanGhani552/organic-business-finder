@@ -19,6 +19,7 @@ class Chat extends Model
     public static function sendMessage($data)
     {
         try {
+            $data['type'] = 'chat';
             $user = User::where('id',$data['receiver_id'])->first();
             $sender = auth()->user();
             $deviceTokens = $user->deviceTokens;
