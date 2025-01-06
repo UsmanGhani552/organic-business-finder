@@ -1,7 +1,7 @@
 /vendor
 /.env
 /.htaccess
-/public
+/public/images
 /node_modules
 storage/app/*
 public/storage

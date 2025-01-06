@@ -67,7 +67,7 @@ class Farm extends Model
         Log::info('Farm data received', $data);
         // dd($data);
         $farm = new self;
-        $data['image'] = $farm->uploadImage($data['request'], 'image', 'farm');
+        $data['image'] = $farm->uploadImage($data['request'], 'image', 'images/farm');
 
         $farm = self::create(self::farmData($data));
 
@@ -91,7 +91,7 @@ class Farm extends Model
         }
         // dd($farm);
         foreach ($data['products'] as $index => $product) {
-            $product['image'] = $farm->uploadImage($data['request'], "products.$index.image", 'product');
+            $product['image'] = $farm->uploadImage($data['request'], "products.$index.image", 'images/product');
             Product::create([
                 'name' => $product['name'],
                 'price' => $product['price'],
@@ -104,7 +104,7 @@ class Farm extends Model
     }
     public static function updateFarm(array $data, $farm)
     {
-        $data['image'] = $farm->uploadImage($data['request'], 'image', 'farm', "farm/{$farm->image}", $farm->image);
+        $data['image'] = $farm->uploadImage($data['request'], 'image', 'images/farm', "images/farm/{$farm->image}", $farm->image);
         // dd($data['image']);
 
         $farm->update(self::farmData($data));
@@ -128,13 +128,13 @@ class Farm extends Model
                     ->where('id', $product['id'])
                     ->first();
                     // Determine the old image path if the product exists, otherwise set it to null
-                    $oldImagePath = $existingProduct ? "product/{$existingProduct->image}" : null;
+                    $oldImagePath = $existingProduct ? "images/product/{$existingProduct->image}" : null;
 
                     // Upload the new image or keep the default
                     $product['image'] = $farm->uploadImage(
                         $data['request'],
                         "products.$index.image",
-                        'product',
+                        'images/product',
                         $oldImagePath,
                         $existingProduct->image ?? null
                     );

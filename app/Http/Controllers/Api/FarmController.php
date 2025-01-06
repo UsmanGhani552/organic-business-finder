@@ -114,7 +114,7 @@ class FarmController extends Controller
             $product_name = $request->query('product_name');
             $category_id = $request->query('category_id');
             $user = auth()->user();
-            $userId = $user ? $user->id : null; // Null if no user is logged in
+            $userId = $user ? $user->id : null; 
 
             $farms = Farm::with('categories', 'days', 'payments', 'products', 'users')
                 ->selectRaw("
@@ -145,12 +145,6 @@ class FarmController extends Controller
                     $query->where('category_id', $category_id);
                 });
             }
-            // if ($product_name) {
-            //     $farms->whereHas('products', function ($query) use ($product_name) {
-            //         $query->where('name', $product_name);
-            //     });
-            // }
-
             // Get the filtered and processed farms
             $farms = $farms->get();
             $farmArray = Farm::getFarmRelatedData($farms);

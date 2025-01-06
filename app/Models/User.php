@@ -75,7 +75,7 @@ class User extends Authenticatable
 
     public static function editProfile($user, array $data)
     {
-        $data['image'] = (new self)->uploadImage(request(), 'image', 'user', "user/{$user->image}", $user->image);
+        $data['image'] = (new self)->uploadImage(request(), 'image', 'images/user', "images/user/{$user->image}", $user->image);
         $user->update($data);
         return $user->fresh();
     }
@@ -88,7 +88,7 @@ class User extends Authenticatable
 
     public static function editImage($user): void
     {
-        $uploadedImagePath = (new self)->uploadImage(request(), 'image', 'user', "user/{$user->image}", $user->image);
+        $uploadedImagePath = (new self)->uploadImage(request(), 'image', 'images/user', "images/user/{$user->image}", $user->image);
         $user->update(['image' => $uploadedImagePath]);
     }
 
@@ -98,6 +98,19 @@ class User extends Authenticatable
             'otp' => $otp,
             'otp_expires_at' => now()->addMinutes(5),
         ]);
+    }
+
+    // for admin
+    public static function storeUser(array $data): void {
+        // dd($data);
+        $data['password'] = Hash::make($data['password']);
+        $data['image'] = (new self)->uploadImage(request(), 'image', 'images/user');
+        self::create($data);
+    }
+    public static function updateUser(array $data, $user): void {
+        $data['password'] = $data['password'] ? Hash::make($data['password']) : $user->password;
+        $data['image'] = (new self)->uploadImage(request(), 'image', 'images/user', "images/user/{$user->image}", $user->image);
+        $user->update($data);
     }
 
     public function farms()

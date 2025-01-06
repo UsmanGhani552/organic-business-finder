@@ -59,7 +59,7 @@ class SocialLoginController extends Controller
             return response()->json([
                 'message' => 'Login successful',
                 'user' => $user,
-                'token' => $user->createToken('API Token')->plainTextToken,
+                // 'token' => $user->createToken('API Token')->plainTextToken,
             ]);
         } catch (Exception $e) {
             return response()->json([
