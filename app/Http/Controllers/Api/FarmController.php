@@ -151,8 +151,8 @@ class FarmController extends Controller
             return response()->json([
                 'status_code' => 200,
                 'farms' => $farmArray,
-                'base_url_farms' => asset('farm'),
-                'base_url_products' => asset('product'),
+                'base_url_farms' => asset('images/farm'),
+                'base_url_products' => asset('images/product'),
             ], 200);
         } catch (Exception $e) {
             return response()->json([
