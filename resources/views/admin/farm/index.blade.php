@@ -166,7 +166,7 @@
         // Populate Products
         $(response.farm.products).each(function (index, product) {
             const baseUrl = window.location.origin;
-            const imageUrl = `${baseUrl}/product/${product.image}`;
+            const imageUrl = `${baseUrl}/images/product/${product.image}`;
             $('#productDetails').append(`
                 <div class="col-md-4 mb-3">
                     <div class="card">

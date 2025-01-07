@@ -35,7 +35,7 @@
                         @foreach ($categories as $category)
                         <tr>
                             <td>{{ $category->name }}</td>
-                            <td><img src="{{ asset('farm/category/'.$category->icon) }}" alt="" class="thumb-sm mr-1"></td>
+                            <td><img src="{{ asset('images/farm/category/'.$category->icon) }}" alt="" class="thumb-sm mr-1"></td>
                             <td>
                                 <a type="button" href="{{ route('admin.category.edit',$category->id) }}" class="btn btn-sm btn-success text-white">
                                     <i class="fas fa-edit"></i>

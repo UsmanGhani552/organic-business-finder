@@ -35,7 +35,7 @@
                         @foreach ($payments as $payment)
                         <tr>
                             <td>{{ $payment->name }}</td>
-                            <td><img src="{{ asset('farm/payment/'.$payment->icon) }}" alt="" class="thumb-sm mr-1"></td>
+                            <td><img src="{{ asset('images/farm/payment/'.$payment->icon) }}" alt="" class="thumb-sm mr-1"></td>
                             <td>
                                 <a type="button" href="{{ route('admin.payment.edit',$payment->id) }}" class="btn btn-sm btn-success text-white">
                                     <i class="fas fa-edit"></i>
