@@ -28,7 +28,7 @@ Route::view('/dashboard', 'admin.dashboard');
 Route::view('/test/index', 'admin.test.index');
 Route::view('/test/create', 'admin.test.create');
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth','admin'])->group(function () {
     Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
     Route::controller(CategoryController::class)->prefix('admin/category')->name('admin.category.')->group(function () {
         Route::get('/', 'index')->name('index');

@@ -103,7 +103,7 @@
         <div class="card">
             <div class="card-body">
                 <div class="text-center">
-                    <a href="index.html" class="logo logo-admin"><img src="{{ asset('assets/images/logo.png') }}" height="150" alt="logo"></a>
+                    <a class="logo logo-admin"><img src="{{ asset('assets/images/logo.png') }}" height="150" alt="logo"></a>
                 </div>
                 
                 <div class="p-3">

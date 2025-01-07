@@ -21,9 +21,9 @@ class AdminMiddleware
         if (!Auth::check()) {
             return redirect()->route('login')->with('error', 'Please log in first.');
         }
-
+        // dd(Auth::user());
         // Check if the user is an admin
-        if (Auth::user()->type === 'visitor') {
+        if (Auth::user()->type === 'admin') {
             return $next($request); // Allow admin to proceed
         }
 
