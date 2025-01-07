@@ -21,7 +21,7 @@ class FarmController extends Controller
 
     public function show($id) {
         $farm = Farm::with('payments','products','users','categories','days')->findOrFail($id);
-        $farm->image = asset('farm/'.$farm->image);
+        $farm->image = asset('images/farm/'.$farm->image);
         return response()->json([
             'status_code' => 200,
             'farm' => $farm

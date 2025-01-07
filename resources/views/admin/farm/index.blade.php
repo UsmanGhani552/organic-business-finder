@@ -39,7 +39,7 @@
                             <td>{{ $farm->name }}</td>
                             <td>{{ $farm->email }}</td>
                             <td>{{ $farm->users->name }}</td>
-                            <td><img src="{{ asset('farm/'.$farm->image) }}" alt="" class="thumb-sm mr-1"></td>
+                            <td><img src="{{ asset('images/farm/'.$farm->image) }}" alt="" class="thumb-sm mr-1"></td>
                             <td>
                                 <a type="button" href="{{ route('admin.farm.edit',$farm->id) }}" class="btn btn-sm btn-warning text-white btn-view" data-id={{ $farm->id }} data-toggle="modal" data-target="#myModal">
                                     <i class="fas fa-eye"></i>
