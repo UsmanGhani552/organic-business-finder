@@ -39,7 +39,7 @@
                             <td>{{ $user->name }}</td>
                             <td>{{ $user->email }}</td>
                             <td>{{ $user->type }}</td>
-                            <td><img src="{{ asset('user/'.$user->image) }}" alt="" class="thumb-sm mr-1"></td>
+                            <td><img src="{{ asset('images/user/'.$user->image) }}" alt="" class="thumb-sm mr-1"></td>
                             <td>
                                 <a type="button" href="{{ route('admin.user.edit',$user->id) }}" class="btn btn-sm btn-success text-white">
                                     <i class="fas fa-edit"></i>
