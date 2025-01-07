@@ -36,7 +36,7 @@
                             <div class="form-group row">
                                 <label for="example-text-input" class="col-sm-2 col-form-label">Image</label>
                                 <div class="col-sm-10">
-                                    <input type="file" id="input-file-now" name="icon" class="dropify" data-default-file="{{ asset('farm/payment/' . $payment->icon) }}" />
+                                    <input type="file" id="input-file-now" name="icon" class="dropify" data-default-file="{{ asset('images/farm/payment/' . $payment->icon) }}" />
                                     {{-- <div class="custom-file">
                                         <input type="file" class="custom-file-input" id="inputGroupFile01" name="image">
                                         <label class="custom-file-label" for="inputGroupFile01">Choose file</label>

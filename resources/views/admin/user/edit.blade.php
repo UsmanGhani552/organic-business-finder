@@ -79,7 +79,7 @@
                         <div class="col-xl-12">
                             <div class="form-group">
                                 <label for="example-text-input" class="col-form-label">Image</label>
-                                <input type="file" id="input-file-now" name="image" class="dropify" data-default-file="{{ asset('user/' . $user->image) }}"/>
+                                <input type="file" id="input-file-now" name="image" class="dropify" data-default-file="{{ asset('images/user/' . $user->image) }}"/>
                                 @error('image')
                                 <span class="text-danger">{{ $message }}</span>
                                 @enderror
