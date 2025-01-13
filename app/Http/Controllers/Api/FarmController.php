@@ -96,9 +96,9 @@ class FarmController extends Controller
     public function getFarmRelatedData()
     {
         try {
-            $categories = Category::select('name','icon')->get();
-            $payments = Payment::select('name','icon')->get();
-            $delivery_options = DeliveryOption::select('name')->get();
+            $categories = Category::select('id','name','icon')->get();
+            $payments = Payment::select('id','name','icon')->get();
+            $delivery_options = DeliveryOption::select('id','name')->get();
             return response()->json([
                 'status_code' => 200,
                 'categories' => $categories,
