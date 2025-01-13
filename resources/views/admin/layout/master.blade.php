@@ -100,6 +100,17 @@
                                 <span> Payments </span>
                             </a>
                         </li>
+                        
+                        <li>
+                            <a href="{{ route('admin.delivery-option.index') }}" class="waves-effect 
+                            {{ Route::is('admin.delivery-option.index') ? 'active' : ''  }} 
+                            {{ Route::is('admin.delivery-option.create') ? 'active' : ''  }} 
+                            {{ Route::is('admin.delivery-option.edit') ? 'active' : ''  }}">
+                                {{-- <i class="fas fa-money-check-alt"></i> --}}
+                                <i class="fas fa-solid fa-truck"></i>
+                                <span> Delivery Options </span>
+                            </a>
+                        </li>
 
                         <li>
                             <a href="{{ route('admin.user.index') }}" class="waves-effect 

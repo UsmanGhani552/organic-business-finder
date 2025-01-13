@@ -62,7 +62,8 @@ class Farm extends Model
         return $key === 1 ? $relation[0] : $relation;
     }
 
-    public static function storeFarm(array $data)
+
+    public static function storeFarm(array $data) 
     {
         Log::info('Farm data received', $data);
         // dd($data);
@@ -89,7 +90,6 @@ class Farm extends Model
                 'payment_id' => $payment_id
             ]);
         }
-        // dd($farm);
         foreach ($data['products'] as $index => $product) {
             $product['image'] = $farm->uploadImage($data['request'], "products.$index.image", 'images/product');
             Product::create([

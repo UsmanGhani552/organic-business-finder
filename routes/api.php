@@ -51,7 +51,7 @@ Route::middleware('auth:api')->group( function () {
     Route::post('/update-farm/{farm}', [FarmController::class, 'updateFarm']);
     Route::get('/get-farms', [FarmController::class, 'getFarms']);
     Route::get('/get-featured-farms', [FarmController::class, 'getFeaturedFarms']);
-    Route::get('/get-categories', [FarmController::class, 'getCategories']);
+    Route::get('/get-farm-related-data', [FarmController::class, 'getFarmRelatedData']);
     Route::get('/get-near-by-farms', [FarmController::class, 'getNearByFarms']);
     Route::get('/delete-farm/{farm}', [FarmController::class, 'deleteFarm']);
 

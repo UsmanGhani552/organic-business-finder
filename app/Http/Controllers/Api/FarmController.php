@@ -7,7 +7,9 @@ use App\Http\Requests\Api\SaveFarmRequest;
 use App\Http\Requests\Api\StoreFarmRequest;
 use App\Http\Requests\Api\UpdateFarmRequest;
 use App\Models\Category;
+use App\Models\DeliveryOption;
 use App\Models\Farm;
+use App\Models\Payment;
 use App\Services\FirebaseService;
 use Exception;
 use Illuminate\Http\Request;
@@ -91,13 +93,17 @@ class FarmController extends Controller
         }
     }
 
-    public function getCategories()
+    public function getFarmRelatedData()
     {
         try {
-            $categories = Category::all();
+            $categories = Category::select('name','icon')->get();
+            $payments = Payment::select('name','icon')->get();
+            $delivery_options = DeliveryOption::select('name')->get();
             return response()->json([
                 'status_code' => 200,
                 'categories' => $categories,
+                'payments' => $payments,
+                'delivery_options' => $delivery_options,
             ], 200);
         } catch (Exception $e) {
             return response()->json([

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\DeliveryOptionController;
 use App\Http\Controllers\Admin\FarmController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\UserController;
@@ -65,6 +66,15 @@ Route::middleware(['auth','admin'])->group(function () {
         Route::get('/edit/{farm}', 'edit')->name('edit');
         Route::post('/update/{farm}', 'update')->name('update');
         Route::get('/destroy/{farm}', 'delete')->name('delete');
+    });
+
+    Route::controller(DeliveryOptionController::class)->prefix('admin/delivery-option')->name('admin.delivery-option.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/create', 'create')->name('create');
+        Route::post('/store', 'store')->name('store');
+        Route::get('/edit/{deliveryOption}', 'edit')->name('edit');
+        Route::post('/update/{deliveryOption}', 'update')->name('update');
+        Route::get('/destroy/{deliveryOption}', 'delete')->name('delete');
     });
 });
 
