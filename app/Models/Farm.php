@@ -28,7 +28,7 @@ class Farm extends Model
         'description',
         'days',
         'timings',
-        'delivery_option',
+        'delivery_option_id',
         'payment',
         'image',
     ];
@@ -120,6 +120,7 @@ class Farm extends Model
         if ($data['payments']) {
             $farm->payments()->sync($data['payments']);
         }
+        
         if ($data['products']) {
             foreach ($data['products'] as $index => $product) {
                 // dd($product);
@@ -176,7 +177,7 @@ class Farm extends Model
             'phone' => $data['phone'],
             'email' => $data['email'],
             'website' => $data['website'],
-            'delivery_option' => $data['delivery_option'],
+            'delivery_option_id' => $data['delivery_option_id'],
             'description' => $data['description'],
             'timings' => $data['timings'],
         ];
@@ -196,6 +197,10 @@ class Farm extends Model
     {
         $this->payments()->sync($payments);
     }
+    public function syncDeliveryOptions(array $delivery_options)
+    {
+        $this->delivery_options()->sync($delivery_options);
+    }
 
     public function users()
     {
@@ -213,6 +218,10 @@ class Farm extends Model
     public function payments()
     {
         return $this->belongsToMany(Payment::class, 'farm_payments');
+    }
+    public function delivery_options()
+    {
+        return $this->belongsToMany(DeliveryOption::class, 'farm_delivery_options');
     }
     public function products()
     {

@@ -18,7 +18,7 @@ class Category extends Model
     public static function storeCategory(array $data): void {
         $category = new self;
         $data['icon'] = $category->uploadImage(request(), 'icon', 'images/farm/category');
-        Category::create($data);
+        self::create($data);
     }
 
     public static function updateCategory(array $data,$category) {

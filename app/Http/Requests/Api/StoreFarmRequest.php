@@ -35,9 +35,9 @@ class StoreFarmRequest extends FormRequest
             'days' => 'required|array',
             'days.*' => 'required|exists:days,id',
             'timings' => 'required|string',
-            'delivery_option' => 'required|string',
             'payments' => 'required|array', // of payment IDs
             'payments.*' => 'required|exists:payments,id', // Each payment must exist in the payments table 
+            'delivery_option_id' => 'required|exists:delivery_options,id',  
             'image' => 'required', // Farm image
             'products' => 'required', // of products
             'products.*.name' => 'required|string', // Name of each product
