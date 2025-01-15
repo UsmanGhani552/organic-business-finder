@@ -33,8 +33,9 @@ class UpdateFarmRequest extends FormRequest
             'description' => 'required|string',
             'categories' => 'required|array', 
             'categories.*' => 'exists:categories,id',
-            'days' => 'required|array', 
-            'days.*' => 'exists:days,id', 
+            'days' => 'required',
+            'days.*.day_id' => 'required|exists:days,id', // Price of each product
+            'days.*.timings' => 'required', // Image of each product
             'timings' => 'required|string',
             'payments' => 'required|array', 
             'payments.*' => 'exists:payments,id', 

@@ -78,10 +78,11 @@ class Farm extends Model
                 'category_id' => $category_id
             ]);
         }
-        foreach ($data['days'] as $day_id) {
+        foreach ($data['days'] as $day) {
             FarmDay::create([
                 'farm_id' => $farm->id,
-                'day_id' => $day_id
+                'day_id' => $day['day_id'],
+                'timings' => $day['timings']
             ]);
         }
         foreach ($data['payments'] as $payment_id) {
@@ -182,24 +183,6 @@ class Farm extends Model
             'timings' => $data['timings'],
         ];
         return $farmArray;
-    }
-    public function syncCategories(array $categories)
-    {
-        $this->categories()->sync($categories);
-    }
-
-    public function syncDays(array $days)
-    {
-        $this->days()->sync($days);
-    }
-
-    public function syncPayments(array $payments)
-    {
-        $this->payments()->sync($payments);
-    }
-    public function syncDeliveryOptions(array $delivery_options)
-    {
-        $this->delivery_options()->sync($delivery_options);
     }
 
     public function users()

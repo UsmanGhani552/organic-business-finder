@@ -12,6 +12,7 @@ class FarmDay extends Model
     protected $fillable = [
         'farm_id',
         'day_id',
+        'timings'
     ];
 
     public function day(){
