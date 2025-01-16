@@ -46,13 +46,25 @@ class Farm extends Model
     }
 
     public static function getFarmRelatedData($farms, $key = 1)
-    {
+    {   
+        // dd($farms[7]);
         $farmArrays = $farms->toArray();
         $relation = $key === 1 ? [$farmArrays] : $farmArrays;
         foreach ($relation as &$value) {
             foreach ($value as &$farm) {
                 $farm['categories'] = Arr::pluck($farm['categories'], 'name');
-                $farm['days'] = Arr::pluck($farm['days'], 'name');
+                $days = [];
+                $daysname= Arr::pluck($farm['days'], 'name');
+                // dd($farm['days']);
+                $daystimings= Arr::pluck($farm['days'], 'pivot');
+                // dd($daystimings);
+                for ($i=0; $i < count($daysname); $i++) { 
+                    $days[$i] = [
+                        'name' => $daysname[$i],
+                        'timings' => $daystimings[$i]['timings'],
+                    ];
+                }
+                $farm['days'] = $days;
                 $farm['payments'] = Arr::pluck($farm['payments'], 'name');
                 if ($key == 2) {
                     $farm['is_save'] = $farm['pivot']['save'] ?? 0;
@@ -196,7 +208,7 @@ class Farm extends Model
     }
     public function days()
     {
-        return $this->belongsToMany(Day::class, 'farm_days');
+        return $this->belongsToMany(Day::class, 'farm_days')->withPivot('timings');
     }
     public function payments()
     {

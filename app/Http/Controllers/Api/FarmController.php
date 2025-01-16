@@ -76,7 +76,7 @@ class FarmController extends Controller
             $farms = Farm::with('categories', 'days', 'payments', 'products')
                 ->where('user_id', $user->id)
                 ->get();
-
+            // dd($farms[7]);
             $farmArray = Farm::getFarmRelatedData($farms);
 
             return response()->json([
