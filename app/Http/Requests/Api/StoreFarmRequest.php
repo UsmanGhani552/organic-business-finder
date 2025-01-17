@@ -26,7 +26,7 @@ class StoreFarmRequest extends FormRequest
             'location' => 'required|string',
             'lat' => 'required|numeric',
             'lng' => 'required|numeric',
-            'phone' => 'required|string',
+            'phone' => 'required|array',
             'email' => 'required|email|unique:farms,email',
             'website' => 'required|url',
             'description' => 'required|string',

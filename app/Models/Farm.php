@@ -117,24 +117,26 @@ class Farm extends Model
     }
     public static function updateFarm(array $data, $farm)
     {
+        // dd($data);
         $data['image'] = $farm->uploadImage($data['request'], 'image', 'images/farm', "images/farm/{$farm->image}", $farm->image);
         // dd($data['image']);
 
         $farm->update(self::farmData($data));
 
-        if ($data['categories']) {
+        if (isset($data['categories'])) {
             $farm->categories()->sync($data['categories']);
         }
 
-        if ($data['days']) {
+        if (isset($data['days'])) {
             $farm->days()->sync($data['days']);
         }
 
-        if ($data['payments']) {
+        if (isset($data['payments'])) {
             $farm->payments()->sync($data['payments']);
         }
         
-        if ($data['products']) {
+        if (isset($data['products'])) {
+            // dd('asd');
             foreach ($data['products'] as $index => $product) {
                 // dd($product);
                 // Check if the product exists
@@ -187,7 +189,7 @@ class Farm extends Model
             'location' => $data['location'],
             'lat' => $data['lat'],
             'lng' => $data['lng'],
-            'phone' => $data['phone'],
+            'phone' => json_encode($data['phone']),
             'email' => $data['email'],
             'website' => $data['website'],
             'delivery_option_id' => $data['delivery_option_id'],
