@@ -76,12 +76,13 @@ class FarmController extends Controller
             $farms = Farm::with('categories', 'days', 'payments', 'products')
                 ->where('user_id', $user->id)
                 ->get();
-            // dd($farms[7]);
-            $farmArray = Farm::getFarmRelatedData($farms);
+                // return response($farms);
+            // dd($farms[7]->days->toArray());
+            // $farmArray = Farm::getFarmRelatedData($farms);
 
             return response()->json([
                 'status_code' => 200,
-                'farms' => $farmArray,
+                'farms' => $farms,
                 'base_url_farms' => asset('farm'),
                 'base_url_products' => asset('product'),
             ], 200);

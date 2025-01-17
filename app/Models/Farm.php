@@ -56,12 +56,12 @@ class Farm extends Model
                 $days = [];
                 $daysname= Arr::pluck($farm['days'], 'name');
                 // dd($farm['days']);
-                $daystimings= Arr::pluck($farm['days'], 'pivot');
+                $daysPivot= Arr::pluck($farm['days'], 'pivot');
                 // dd($daystimings);
                 for ($i=0; $i < count($daysname); $i++) { 
                     $days[$i] = [
                         'name' => $daysname[$i],
-                        'timings' => $daystimings[$i]['timings'],
+                        'timings' => $daysPivot[$i]['timings'],
                     ];
                 }
                 $farm['days'] = $days;
