@@ -120,7 +120,8 @@ class Farm extends Model
         // dd($data);
         $data['image'] = $farm->uploadImage($data['request'], 'image', 'images/farm', "images/farm/{$farm->image}", $farm->image);
         // dd($data['image']);
-
+        
+        // dd($data);
         $farm->update(self::farmData($data));
 
         if (isset($data['categories'])) {
@@ -134,7 +135,6 @@ class Farm extends Model
         if (isset($data['payments'])) {
             $farm->payments()->sync($data['payments']);
         }
-        
         if (isset($data['products'])) {
             // dd('asd');
             foreach ($data['products'] as $index => $product) {
