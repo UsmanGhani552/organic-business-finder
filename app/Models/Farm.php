@@ -129,7 +129,11 @@ class Farm extends Model
         }
 
         if (isset($data['days'])) {
-            $farm->days()->sync($data['days']);
+            $days = [];
+            foreach ($data['days'] as $day) {
+                $days[$day['day_id']] = ['timings' => $day['timings']];
+            }
+            $farm->days()->sync($days);
         }
 
         if (isset($data['payments'])) {
@@ -216,9 +220,9 @@ class Farm extends Model
     {
         return $this->belongsToMany(Payment::class, 'farm_payments');
     }
-    public function delivery_options()
+    public function delivery_option()
     {
-        return $this->belongsToMany(DeliveryOption::class, 'farm_delivery_options');
+        return $this->belongsTo(DeliveryOption::class, 'delivery_option_id');
     }
     public function products()
     {

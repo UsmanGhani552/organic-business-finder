@@ -73,7 +73,7 @@ class FarmController extends Controller
     {
         try {
             $user = auth::user();
-            $farms = Farm::with('categories', 'days', 'payments', 'products')
+            $farms = Farm::with('categories', 'days', 'payments', 'delivery_option' ,'products')
                 ->where('user_id', $user->id)
                 ->get();
                 // return response($farms);
