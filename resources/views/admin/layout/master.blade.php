@@ -47,12 +47,12 @@
             <!-- LOGO -->
             <div class="topbar-left">
                 <div class="text-center bg-logo">
-                    <a href="index.html" class="logo logo-admin"><img src="{{ asset('assets/images/logo-mini.png') }}" height="50" alt="logo"></a>
+                    <a href="index.html" class="logo logo-admin"><img src="{{ asset('assets/images/logo-mini.png') }}" height="100" alt="logo"></a>
                     <!-- <a href="index.html" class="logo"><img src="assets/images/logo.png" height="24" alt="logo"></a> -->
                 </div>
             </div>
             <div class="sidebar-user">
-                <img src="{{ asset('assets/images/users/avatar-6.jpg') }}" alt="user" class="rounded-circle img-thumbnail mb-1">
+                <img src="{{ asset('images/user/'.auth()->user()->image) }}" alt="user" class="rounded-circle img-thumbnail mb-1">
                 <h6 class="">{{ auth()->user()->name }}</h6>
                 <p class=" online-icon text-dark"><i class="mdi mdi-record text-success"></i>online</p>
                 <ul class="list-unstyled list-inline mb-0 mt-2">
@@ -162,7 +162,7 @@
 
                             <li class="list-inline-item dropdown notification-list">
                                 <a class="nav-link dropdown-toggle arrow-none waves-effect nav-user" data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
-                                    <img src="{{ asset('assets/images/users/avatar-6.jpg') }}" alt="user" class="rounded-circle">
+                                    <img src="{{ asset('images/user/'.auth()->user()->image) }}" alt="user" class="rounded-circle" height="100">
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-right profile-dropdown ">
                                     <!-- item-->

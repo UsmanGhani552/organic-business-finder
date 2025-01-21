@@ -3205,7 +3205,8 @@ File: Menu
 }
 
 .topbar-left .bg-logo {
-  background-color: #605daf;
+  background-color: #83A048;
+  /* background-color: #605daf; */
 }
 
 .logo {
@@ -3222,8 +3223,13 @@ File: Menu
 }
 
 .navbar-custom {
-  background-color: #605daf;
+  /* background-color: #605daf; */
+  background-color: #83A048;
   border: none;
+  height: 100px;
+  display: flex;
+  justify-content: end;
+  align-items: center;
   margin: -20px -25px 0 -25px;
   -webkit-box-shadow: 1px 0px 20px rgba(0, 0, 0, 0.2);
           box-shadow: 1px 0px 20px rgba(0, 0, 0, 0.2);
@@ -3355,8 +3361,8 @@ File: Menu
 }
 
 .nav-user img {
-  height: 36px;
-  width: 36px;
+  height: 70px;
+  width: 70px;
 }
 
 .arrow-none:after {
