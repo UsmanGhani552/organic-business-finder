@@ -73,7 +73,7 @@ class FarmController extends Controller
     {
         try {
             $user = auth::user();
-            $farms = Farm::with('categories', 'days', 'payments', 'delivery_option' ,'products')
+            $farms = Farm::with('users','categories', 'days', 'payments', 'delivery_option' ,'products')
                 ->where('user_id', $user->id)
                 ->get();
                 // return response($farms);
@@ -123,7 +123,7 @@ class FarmController extends Controller
             $user = auth()->user();
             $userId = $user ? $user->id : null; 
 
-            $farms = Farm::with('categories', 'days', 'payments', 'products', 'users')
+            $farms = Farm::with('users','categories', 'days', 'payments', 'products', 'users')
                 ->selectRaw("
                 farms.*,
                 CASE 
@@ -177,7 +177,7 @@ class FarmController extends Controller
             $longitude = $request->query('longitude');
             $user = auth()->user();
             $userId = $user ? $user->id : null;
-            $farms = Farm::with('categories', 'days', 'payments', 'products', 'users')
+            $farms = Farm::with('users','categories', 'days', 'payments', 'products', 'users')
                 ->selectRaw("
                 farms.*,
                 (6371 * acos(cos(radians($latitude)) * 
@@ -237,7 +237,7 @@ class FarmController extends Controller
         try {
             $user = auth()->user();
             $farms = $user->savedFarms()
-                ->with('categories', 'days', 'payments', 'products', 'users')
+                ->with('users','categories', 'days', 'payments', 'products', 'users')
                 ->get()
                 ->groupBy(function ($farm) {
                     return $farm->categories->first()->name ?? 'Uncategorized';

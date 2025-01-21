@@ -32,6 +32,7 @@ class User extends Authenticatable
         'type',
         'image',
         'otp',
+        'certificate',
         'otp_expires_at'
 
     ];
@@ -58,8 +59,9 @@ class User extends Authenticatable
 
     public static function registerUser($data)
     {
-
+        // dd($data);
         $data['password'] = Hash::make($data['password']);
+        $data['certificate'] = (new self)->uploadImage(request(), 'certificate', 'images/user/certificates');
         $user = self::create($data);
         $user->saveFcmToken($data['fcm_token']);
         return $user;

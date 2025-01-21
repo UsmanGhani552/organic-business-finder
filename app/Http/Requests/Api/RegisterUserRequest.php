@@ -21,11 +21,16 @@ class RegisterUserRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $rules = [
+            'name' => 'required',
             'email' => 'required|email|unique:users,email',
             'type' => 'required|in:visitor,farmer',
             'password' => 'required|min:8|confirmed', // Ensure password confirmation
             'fcm_token' => 'required'
         ];
+        if (request()->input('type') === 'farmer') {
+            $rules['certificate'] = "required|mimes:pdf,word|max:10000";
+        }
+        return $rules; 
     }
 }
