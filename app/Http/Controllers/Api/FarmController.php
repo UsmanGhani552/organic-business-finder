@@ -83,8 +83,9 @@ class FarmController extends Controller
             return response()->json([
                 'status_code' => 200,
                 'farms' => $farms,
-                'base_url_farms' => asset('farm'),
-                'base_url_products' => asset('product'),
+                'base_url_farms' => asset('images/farm'),
+                'base_url_products' => asset('images/product'),
+                'base_url_user_certificate' => asset('images/user/certificates'),
             ], 200);
         } catch (Exception $e) {
             return response()->json([
