@@ -39,6 +39,8 @@ class UpdateFarmRequest extends FormRequest
             'timings' => 'string',
             'payments' => 'array', 
             'payments.*' => 'exists:payments,id', 
+            'services' => 'required|array', // of services IDs
+            'services.*' => 'required|exists:services,id', // Each services must exist in the servicess table 
             'delivery_option_id' => 'exists:delivery_options,id',
             'image' => 'image|max:2048', 
             'products' => 'array', 

@@ -38,6 +38,8 @@ class StoreFarmRequest extends FormRequest
             'timings' => 'required|string',
             'payments' => 'required|array', // of payment IDs
             'payments.*' => 'required|exists:payments,id', // Each payment must exist in the payments table 
+            'services' => 'required|array', // of services IDs
+            'services.*' => 'required|exists:services,id', // Each services must exist in the servicess table 
             'delivery_option_id' => 'required|exists:delivery_options,id',  
             'image' => 'required', // Farm image
             'products' => 'required', // of products
