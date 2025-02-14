@@ -55,13 +55,15 @@ class Farm extends Model
                 $farm['categories'] = Arr::pluck($farm['categories'], 'name');
                 $days = [];
                 $daysname = Arr::pluck($farm['days'], 'name');
-                // dd($farm['days']);
                 $daysPivot = Arr::pluck($farm['days'], 'pivot');
                 // dd($daystimings);
                 for ($i = 0; $i < count($daysname); $i++) {
                     $days[$i] = [
                         'name' => $daysname[$i],
                         'timings' => $daysPivot[$i]['timings'],
+                        'location' => $daysPivot[$i]['location'],
+                        'lat' => $daysPivot[$i]['lat'],
+                        'lng' => $daysPivot[$i]['lng'],
                     ];
                 }
                 $farm['days'] = $days;
@@ -83,12 +85,12 @@ class Farm extends Model
         $data['image'] = $farm->uploadImage($data['request'], 'image', 'images/farm');
 
         $farm = self::create(self::farmData($data));
-
         $farm->categories()->attach($data['categories']);
         $farm->payments()->attach($data['payments']);
         $farm->services()->attach($data['services']);
+
         foreach ($data['days'] as $day) {
-            $farm->days()->attach($day['day_id'], ['timings' => $day['timings']]);
+            $farm->days()->attach($day['day_id'], ['timings' => $day['timings'],'location' => $day['location'],'lat' => $day['lat'],'lng' => $day['lng']]);
         }
         foreach ($data['products'] as $index => $product) {
             $product['image'] = $farm->uploadImage($data['request'], "products.$index.image", 'images/product');
@@ -108,7 +110,6 @@ class Farm extends Model
         $data['image'] = $farm->uploadImage($data['request'], 'image', 'images/farm', "images/farm/{$farm->image}", $farm->image);
         // dd($data['image']);
 
-        // dd($data);
         $farm->update(self::farmData($data));
 
         if (isset($data['categories'])) {
@@ -204,7 +205,7 @@ class Farm extends Model
     }
     public function days()
     {
-        return $this->belongsToMany(Day::class, 'farm_days')->withPivot('timings');
+        return $this->belongsToMany(Day::class, 'farm_days')->withPivot('timings','location','lat','lng');
     }
     public function payments()
     {

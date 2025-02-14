@@ -33,8 +33,11 @@ class StoreFarmRequest extends FormRequest
             'categories' => 'required|array', 
             'categories.*' => 'required|exists:categories,id',
             'days' => 'required',
-            'days.*.day_id' => 'required|exists:days,id', // Price of each product
-            'days.*.timings' => 'required', // Image of each product
+            'days.*.day_id' => 'required|exists:days,id',
+            'days.*.timings' => 'required', 
+            'days.*.location' => 'required', 
+            'days.*.lat' => 'required', 
+            'days.*.lng' => 'required', 
             'timings' => 'required|string',
             'payments' => 'required|array', // of payment IDs
             'payments.*' => 'required|exists:payments,id', // Each payment must exist in the payments table 
@@ -44,8 +47,8 @@ class StoreFarmRequest extends FormRequest
             'image' => 'required', // Farm image
             'products' => 'required', // of products
             'products.*.name' => 'required|string', // Name of each product
-            'products.*.price' => 'required', // Price of each product
-            'products.*.image' => 'required', // Image of each product
+            'products.*.price' => 'required',
+            'products.*.image' => 'required', 
         ];
     }
 }

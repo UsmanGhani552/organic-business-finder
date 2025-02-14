@@ -9,8 +9,10 @@ use App\Http\Requests\Api\UpdateFarmRequest;
 use App\Models\Category;
 use App\Models\DeliveryOption;
 use App\Models\Farm;
+use App\Models\FarmDay;
 use App\Models\Payment;
 use App\Services\FirebaseService;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -73,7 +75,7 @@ class FarmController extends Controller
     {
         try {
             $user = auth::user();
-            $farms = Farm::with('users','categories', 'days', 'payments', 'delivery_option' ,'products')
+            $farms = Farm::with('users','categories', 'days', 'payments', 'delivery_option' ,'services','products')
                 ->where('user_id', $user->id)
                 ->get();
                 // return response($farms);
@@ -178,26 +180,27 @@ class FarmController extends Controller
             $longitude = $request->query('longitude');
             $user = auth()->user();
             $userId = $user ? $user->id : null;
-            $farms = Farm::with('users','categories', 'days', 'payments', 'products', 'users')
-                ->selectRaw("
-                farms.*,
+            $farms = FarmDay::with('farms')->where('day_id',2)->selectRaw("
+                farm_days.*,
                 (6371 * acos(cos(radians($latitude)) * 
-                cos(radians(farms.lat)) * 
-                cos(radians(farms.lng) - radians($longitude)) + 
+                cos(radians(farm_days.lat)) * 
+                cos(radians(farm_days.lng) - radians($longitude)) + 
                 sin(radians($latitude)) * 
-                sin(radians(farms.lat)))) AS distance,
+                sin(radians(farm_days.lat)))) AS distance,
                 CASE 
                     WHEN saved_farms.user_id = ? THEN 1
                     ELSE 0
                 END AS is_save
             ", [$userId])
                 ->leftJoin('saved_farms', function ($join) use ($userId) {
-                    $join->on('farms.id', '=', 'saved_farms.farm_id')
+                    $join->on('farm_days.farm_id', '=', 'saved_farms.farm_id')
                         ->where('saved_farms.user_id', '=', $userId);
                 })
-                ->having("distance", "<", 10)
+                ->having("distance", "<", 100)
                 ->orderBy("distance")
                 ->get();
+                $farms = Farm::whereIn('id', $farms->pluck('farm_id'))->with('users','categories', 'days', 'payments', 'products', 'users')->get();
+                // dd($farms);
             $farmArray = Farm::getFarmRelatedData($farms);
             return response()->json([
                 'status_code' => 200,
@@ -213,6 +216,48 @@ class FarmController extends Controller
             ], 400);
         }
     }
+    // public function getNearByFarms(Request $request)
+    // {
+    //     try {
+    //         $latitude = $request->query('latitude');
+    //         $longitude = $request->query('longitude');
+    //         $user = auth()->user();
+    //         $userId = $user ? $user->id : null;
+    //         $farms = Farm::with('users','categories', 'days', 'payments', 'products', 'users')
+    //             ->selectRaw("
+    //             farms.*,
+    //             (6371 * acos(cos(radians($latitude)) * 
+    //             cos(radians(farms.lat)) * 
+    //             cos(radians(farms.lng) - radians($longitude)) + 
+    //             sin(radians($latitude)) * 
+    //             sin(radians(farms.lat)))) AS distance,
+    //             CASE 
+    //                 WHEN saved_farms.user_id = ? THEN 1
+    //                 ELSE 0
+    //             END AS is_save
+    //         ", [$userId])
+    //             ->leftJoin('saved_farms', function ($join) use ($userId) {
+    //                 $join->on('farms.id', '=', 'saved_farms.farm_id')
+    //                     ->where('saved_farms.user_id', '=', $userId);
+    //             })
+    //             ->having("distance", "<", 10)
+    //             ->orderBy("distance")
+    //             ->get();
+    //         $farmArray = Farm::getFarmRelatedData($farms);
+    //         return response()->json([
+    //             'status_code' => 200,
+    //             // 'farms' => $farms,
+    //             'farms' => $farmArray,
+    //             'base_url_farms' => asset('farm'),
+    //             'base_url_products' => asset('product'),
+    //         ], 200);
+    //     } catch (Exception $e) {
+    //         return response()->json([
+    //             'status_code' => 400,
+    //             'message' => $e->getMessage(),
+    //         ], 400);
+    //     }
+    // }
 
     public function toggleSavedFarm(SaveFarmRequest $request)
     {

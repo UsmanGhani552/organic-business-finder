@@ -18,4 +18,9 @@ class FarmDay extends Model
     public function day(){
         return $this->belongsToMany(Day::class,'farm_id');
     }
+
+    public function farms()
+    {
+        return $this->belongsTo(Farm::class, 'farm_id', 'id');
+    }
 }
