@@ -90,7 +90,7 @@ class Farm extends Model
         $farm->services()->attach($data['services']);
 
         foreach ($data['days'] as $day) {
-            $farm->days()->attach($day['day_id'], ['timings' => $day['timings'],'location' => $day['location'],'lat' => $day['lat'],'lng' => $day['lng']]);
+            $farm->days()->attach($day['day_id'], ['timings' => $day['timings'], 'location' => $day['location'], 'lat' => $day['lat'], 'lng' => $day['lng']]);
         }
         foreach ($data['products'] as $index => $product) {
             $product['image'] = $farm->uploadImage($data['request'], "products.$index.image", 'images/product');
@@ -106,10 +106,10 @@ class Farm extends Model
     }
     public static function updateFarm(array $data, $farm)
     {
-        // dd($data);
         $data['image'] = $farm->uploadImage($data['request'], 'image', 'images/farm', "images/farm/{$farm->image}", $farm->image);
         // dd($data['image']);
 
+        // dd($data);
         $farm->update(self::farmData($data));
 
         if (isset($data['categories'])) {
@@ -119,7 +119,7 @@ class Farm extends Model
         if (isset($data['days'])) {
             $days = [];
             foreach ($data['days'] as $day) {
-                $days[$day['day_id']] = ['timings' => $day['timings']];
+                $days[$day['day_id']] = ['timings' => $day['timings'], 'location' => $day['location'], 'lat' => $day['lat'], 'lng' => $day['lng']];
             }
             $farm->days()->sync($days);
         }
@@ -179,19 +179,21 @@ class Farm extends Model
     {
         $farmArray = [
             'user_id' => auth()->user()->id,
-            'name' => $data['name'],
-            'image' => $data['image'],
-            'location' => $data['location'],
-            'lat' => $data['lat'],
-            'lng' => $data['lng'],
-            'phone' => json_encode($data['phone']),
-            'email' => $data['email'],
-            'website' => $data['website'],
-            'delivery_option_id' => $data['delivery_option_id'],
-            'description' => $data['description'],
-            'timings' => $data['timings'],
+            'name' => $data['name'] ?? null,
+            'image' => $data['image'] ?? null,
+            'location' => $data['location'] ?? null,
+            'lat' => $data['lat'] ?? null,
+            'lng' => $data['lng'] ?? null,
+            'phone' => isset($data['phone']) ? json_encode($data['phone']) : null,
+            'email' => $data['email'] ?? null,
+            'website' => $data['website'] ?? null,
+            'delivery_option_id' => $data['delivery_option_id'] ?? null,
+            'description' => $data['description'] ?? null,
+            'timings' => $data['timings'] ?? null,
         ];
-        return $farmArray;
+    
+        // Remove all null values to avoid updating fields to NULL
+        return array_filter($farmArray, fn($value) => !is_null($value));
     }
 
     public function users()
@@ -205,7 +207,7 @@ class Farm extends Model
     }
     public function days()
     {
-        return $this->belongsToMany(Day::class, 'farm_days')->withPivot('timings','location','lat','lng');
+        return $this->belongsToMany(Day::class, 'farm_days')->withPivot('timings', 'location', 'lat', 'lng');
     }
     public function payments()
     {
