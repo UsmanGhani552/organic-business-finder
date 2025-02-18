@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\File;
 
 trait ImageUploadTrait
 {
+
     public function uploadImage(Request $request, string $name, string $path, ?string $oldImagePath = null, string $defaultPath = null)
     {
         if($request->hasFile($name)) {
@@ -25,6 +26,12 @@ trait ImageUploadTrait
         }
         return $defaultPath;
     }
+
+
+
+    // public function user($data){
+    //     $this->registerUser($data);
+    // } 
 }
 
 

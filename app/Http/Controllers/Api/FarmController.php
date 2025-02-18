@@ -178,9 +178,10 @@ class FarmController extends Controller
         try {
             $latitude = $request->query('latitude');
             $longitude = $request->query('longitude');
+            $day_id = $request->query('day_id');
             $user = auth()->user();
             $userId = $user ? $user->id : null;
-            $farms = FarmDay::with('farms')->where('day_id',2)->selectRaw("
+            $farms = FarmDay::with('farms')->where('day_id',$day_id)->selectRaw("
                 farm_days.*,
                 (6371 * acos(cos(radians($latitude)) * 
                 cos(radians(farm_days.lat)) * 

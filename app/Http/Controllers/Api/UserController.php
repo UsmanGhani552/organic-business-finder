@@ -34,7 +34,9 @@ class UserController extends Controller
     public function changePassword(ChangePasswordRequest $request)
     {
         try {
+            
             $user = Auth::user();
+            $imagetrait = $user->upload;
             if (!Hash::check($request->old_password, $user->password)) {
                 return response()->json([
                     'status_code' => 400,
