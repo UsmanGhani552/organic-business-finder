@@ -126,7 +126,7 @@ class FarmController extends Controller
             $user = auth()->user();
             $userId = $user ? $user->id : null; 
 
-            $farms = Farm::with('users','categories', 'days', 'payments', 'products', 'users')
+            $farms = Farm::with('users','categories', 'days', 'payments', 'products', 'users','delivery_option','services')
                 ->selectRaw("
                 farms.*,
                 CASE 
@@ -200,7 +200,7 @@ class FarmController extends Controller
                 ->having("distance", "<", 100)
                 ->orderBy("distance")
                 ->get();
-                $farms = Farm::whereIn('id', $farms->pluck('farm_id'))->with('users','categories', 'days', 'payments', 'products', 'users')->get();
+                $farms = Farm::whereIn('id', $farms->pluck('farm_id'))->with('users','categories', 'days', 'payments', 'products', 'users','delivery_option','services')->get();
                 // dd($farms);
             $farmArray = Farm::getFarmRelatedData($farms);
             return response()->json([
@@ -284,7 +284,7 @@ class FarmController extends Controller
         try {
             $user = auth()->user();
             $farms = $user->savedFarms()
-                ->with('users','categories', 'days', 'payments', 'products', 'users')
+                ->with('users','categories', 'days', 'payments', 'products', 'users','delivery_option','services')
                 ->get()
                 ->groupBy(function ($farm) {
                     return $farm->categories->first()->name ?? 'Uncategorized';
