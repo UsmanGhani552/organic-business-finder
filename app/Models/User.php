@@ -78,6 +78,7 @@ class User extends Authenticatable
     public static function editProfile($user, array $data)
     {
         $data['image'] = (new self)->uploadImage(request(), 'image', 'images/user', "images/user/{$user->image}", $user->image);
+        $data['certificate'] = (new self)->uploadImage(request(), 'certificate', 'images/user/certificates', "images/user/certificates/{$user->certificate}", $user->certificate);
         $user->update($data);
         return $user->fresh();
     }
