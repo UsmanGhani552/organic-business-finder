@@ -26,7 +26,7 @@ class EditProfileRequest extends FormRequest
             'name' => 'string',
             'email' => 'email|unique:users,email,'. Auth::user()->id,
             'image' => 'image|max:2048',
-            'certificate' => 'image|max:2048',
+            'certificate' => 'mimes:pdf,word|max:10000',
         ];
     }
 }
