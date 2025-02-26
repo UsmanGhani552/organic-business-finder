@@ -80,11 +80,11 @@ class FarmController extends Controller
                 ->get();
                 // return response($farms);
             // dd($farms[7]->days->toArray());
-            // $farmArray = Farm::getFarmRelatedData($farms);
+            $farmArray = Farm::getFarmRelatedData($farms);
 
             return response()->json([
                 'status_code' => 200,
-                'farms' => $farms,
+                'farms' => $farmArray,
                 'base_url_farms' => asset('images/farm'),
                 'base_url_products' => asset('images/product'),
                 'base_url_user_certificate' => asset('images/user/certificates'),
