@@ -11,6 +11,7 @@ use App\Models\DeliveryOption;
 use App\Models\Farm;
 use App\Models\FarmDay;
 use App\Models\Payment;
+use App\Models\Service;
 use App\Services\FirebaseService;
 use Carbon\Carbon;
 use Exception;
@@ -103,11 +104,13 @@ class FarmController extends Controller
             $categories = Category::select('id','name','icon')->get();
             $payments = Payment::select('id','name','icon')->get();
             $delivery_options = DeliveryOption::select('id','name')->get();
+            $services = Service::select('id','name')->get();
             return response()->json([
                 'status_code' => 200,
                 'categories' => $categories,
                 'payments' => $payments,
                 'delivery_options' => $delivery_options,
+                'services' => $services,
             ], 200);
         } catch (Exception $e) {
             return response()->json([
