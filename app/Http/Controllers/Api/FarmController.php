@@ -121,8 +121,8 @@ class FarmController extends Controller
     {
         try {
             $farm_name = $request->query('farm_name');
-            $product_name = $request->query('product_name');
             $category_id = $request->query('category_id');
+            $service_id = $request->query('service_id');
             $user = auth()->user();
             $userId = $user ? $user->id : null; 
 
@@ -139,7 +139,7 @@ class FarmController extends Controller
                         ->where('saved_farms.user_id', '=', $userId);
                 });
 
-            // Apply farm name filter if provided
+            // Apply farm name or product name filter if provided
             if ($farm_name) {
                 $farms->where('name', 'LIKE', "%$farm_name%") // Filter by farm name
                     ->orWhere(function ($query) use ($farm_name) { // OR filter related products
@@ -155,6 +155,14 @@ class FarmController extends Controller
                     $query->where('category_id', $category_id);
                 });
             }
+
+            // Apply services filter if provided
+            if ($service_id) {
+                $farms->whereHas('services', function ($query) use ($service_id) {
+                    $query->where('service_id', $service_id);
+                });
+            }
+
             // Get the filtered and processed farms
             $farms = $farms->get();
             $farmArray = Farm::getFarmRelatedData($farms);

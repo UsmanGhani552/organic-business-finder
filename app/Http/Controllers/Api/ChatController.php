@@ -94,7 +94,7 @@ class ChatController extends Controller
             ]);
         } catch (Exception $e) {
             return response()->json([
-                'status_code' => 400,
+                'status_code' => 400,  
                 'message' => $e->getMessage(),
             ], 400);
         }
