@@ -52,7 +52,7 @@ Route::middleware('auth:api')->group( function () {
     Route::get('/get-farms', [FarmController::class, 'getFarms']);
     Route::get('/get-featured-farms', [FarmController::class, 'getFeaturedFarms']);
     Route::get('/get-farm-related-data', [FarmController::class, 'getFarmRelatedData']);
-    Route::get('/get-near-by-farms', [FarmController::class, 'getNearByFarms']);
+    Route::post('/get-near-by-farms', [FarmController::class, 'getNearByFarms']);
     Route::get('/delete-farm/{farm}', [FarmController::class, 'deleteFarm']);
 
     Route::post('/toggle-saved-farm', [FarmController::class, 'toggleSavedFarm']);

@@ -33,7 +33,7 @@ class FarmController extends Controller
             $title = "Farm Created";
             $body = "Congratulations! Your listing is now live.";
             $firebaseService = app(FirebaseService::class);
-            $res = $firebaseService->sendNotificationToMultipleDevices($deviceTokens, $title, $body );
+            $res = $firebaseService->sendNotificationToMultipleDevices($deviceTokens, $title, $body);
             DB::commit();
             $farm->load('products');
             return response()->json([
@@ -76,10 +76,10 @@ class FarmController extends Controller
     {
         try {
             $user = auth::user();
-            $farms = Farm::with('users','categories', 'days', 'payments', 'delivery_option' ,'services','products')
+            $farms = Farm::with('users', 'categories', 'days', 'payments', 'delivery_option', 'services', 'products')
                 ->where('user_id', $user->id)
                 ->get();
-                // return response($farms);
+            // return response($farms);
             // dd($farms[7]->days->toArray());
             $farmArray = Farm::getFarmRelatedData($farms);
 
@@ -101,10 +101,10 @@ class FarmController extends Controller
     public function getFarmRelatedData()
     {
         try {
-            $categories = Category::select('id','name','icon')->get();
-            $payments = Payment::select('id','name','icon')->get();
-            $delivery_options = DeliveryOption::select('id','name')->get();
-            $services = Service::select('id','name')->get();
+            $categories = Category::select('id', 'name', 'icon')->get();
+            $payments = Payment::select('id', 'name', 'icon')->get();
+            $delivery_options = DeliveryOption::select('id', 'name')->get();
+            $services = Service::select('id', 'name')->get();
             return response()->json([
                 'status_code' => 200,
                 'categories' => $categories,
@@ -127,9 +127,9 @@ class FarmController extends Controller
             $category_id = $request->query('category_id');
             $service_id = $request->query('service_id');
             $user = auth()->user();
-            $userId = $user ? $user->id : null; 
+            $userId = $user ? $user->id : null;
 
-            $farms = Farm::with('users','categories', 'days', 'payments', 'products', 'users','delivery_option','services')
+            $farms = Farm::with('users', 'categories', 'days', 'payments', 'products', 'users', 'delivery_option', 'services')
                 ->selectRaw("
                 farms.*,
                 CASE 
@@ -189,10 +189,10 @@ class FarmController extends Controller
         try {
             $latitude = $request->query('latitude');
             $longitude = $request->query('longitude');
-            $day_id = $request->query('day_id');
+            $day_ids =  $request->query('day_ids');
             $user = auth()->user();
             $userId = $user ? $user->id : null;
-            $farms = FarmDay::with('farms')->where('day_id',$day_id)->selectRaw("
+            $farms = FarmDay::with('farms')->whereIn('day_id', $day_ids)->selectRaw("
                 farm_days.*,
                 (6371 * acos(cos(radians($latitude)) * 
                 cos(radians(farm_days.lat)) * 
@@ -211,9 +211,14 @@ class FarmController extends Controller
                 ->having("distance", "<", 100)
                 ->orderBy("distance")
                 ->get();
-                $farms = Farm::whereIn('id', $farms->pluck('farm_id'))->with('users','categories', 'days', 'payments', 'products', 'users','delivery_option','services')->get();
-                // dd($farms);
-            $farmArray = Farm::getFarmRelatedData($farms);
+            // Extract farms from FarmDay and include distance
+            $farmsWithDistance = $farms->map(function ($farmDay) {
+                $farm = $farmDay->farms;
+                $farm->distance = $farmDay->distance;
+                return $farm->load('categories', 'days', 'payments', 'products', 'users', 'delivery_option', 'services');
+            });
+            // dd($farmsWithDistance);
+            $farmArray = Farm::getFarmRelatedData($farmsWithDistance);
             return response()->json([
                 'status_code' => 200,
                 // 'farms' => $farms,
@@ -295,10 +300,10 @@ class FarmController extends Controller
         try {
             $user = auth()->user();
             $farms = $user->savedFarms()
-                ->with('users','categories', 'days', 'payments', 'products', 'users','delivery_option','services')
+                ->with('users', 'categories', 'days', 'payments', 'products', 'users', 'delivery_option', 'services')
                 ->get()
                 ->groupBy(function ($farm) {
-                    return $farm->categories->first()->name ?? 'Uncategorized';
+                    return $farm->categories->first() ->name ?? 'Uncategorized';
                 });
             $farmArray = Farm::getFarmRelatedData($farms, 2);
             return response()->json([
