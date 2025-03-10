@@ -81,11 +81,11 @@ class FarmController extends Controller
                 ->get();
             // return response($farms);
             // dd($farms[7]->days->toArray());
-            $farmArray = Farm::getFarmRelatedData($farms);
+            // $farmArray = Farm::getFarmRelatedData($farms);
 
             return response()->json([
                 'status_code' => 200,
-                'farms' => $farmArray,
+                'farms' => $farms,
                 'base_url_farms' => asset('images/farm'),
                 'base_url_products' => asset('images/product'),
                 'base_url_user_certificate' => asset('images/user/certificates'),
@@ -168,10 +168,10 @@ class FarmController extends Controller
 
             // Get the filtered and processed farms
             $farms = $farms->get();
-            $farmArray = Farm::getFarmRelatedData($farms);
+            // $farmArray = Farm::getFarmRelatedData($farms);
             return response()->json([
                 'status_code' => 200,
-                'farms' => $farmArray,
+                'farms' => $farms,
                 'base_url_farms' => asset('images/farm'),
                 'base_url_products' => asset('images/product'),
             ], 200);
@@ -218,11 +218,11 @@ class FarmController extends Controller
                 return $farm->load('categories', 'days', 'payments', 'products', 'users', 'delivery_option', 'services');
             });
             // dd($farmsWithDistance);
-            $farmArray = Farm::getFarmRelatedData($farmsWithDistance);
+            // $farmArray = Farm::getFarmRelatedData($farmsWithDistance);
             return response()->json([
                 'status_code' => 200,
-                // 'farms' => $farms,
-                'farms' => $farmArray,
+                'farms' => $farmsWithDistance,
+                // 'farms' => $farmArray,
                 'base_url_farms' => asset('farm'),
                 'base_url_products' => asset('product'),
             ], 200);
@@ -233,6 +233,7 @@ class FarmController extends Controller
             ], 400);
         }
     }
+
     // public function getNearByFarms(Request $request)
     // {
     //     try {
@@ -305,11 +306,11 @@ class FarmController extends Controller
                 ->groupBy(function ($farm) {
                     return $farm->categories->first() ->name ?? 'Uncategorized';
                 });
-            $farmArray = Farm::getFarmRelatedData($farms, 2);
+            // $farmArray = Farm::getFarmRelatedData($farms, 2);
             return response()->json([
                 'status_code' => 200,
-                'farms' => $farmArray,
-                // 'farms' => $farms,
+                // 'farms' => $farmArray,
+                'farms' => $farms,
             ], 200);
         } catch (Exception $e) {
             return response()->json([
