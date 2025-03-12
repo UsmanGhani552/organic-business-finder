@@ -137,7 +137,7 @@
                             {{ Route::is('admin.service.index') ? 'active' : ''  }} 
                             {{ Route::is('admin.service.create') ? 'active' : ''  }} 
                             {{ Route::is('admin.service.edit') ? 'active' : ''  }}">
-                                <i class="fas fa-solid fa-tractor"></i>
+                            <i class="fab fa-servicestack"></i>
                                 <span>Services </span>
                             </a>
                         </li>
