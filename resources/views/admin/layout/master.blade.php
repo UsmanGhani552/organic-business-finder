@@ -132,6 +132,16 @@
                             </a>
                         </li>
 
+                        <li>
+                            <a href="{{ route('admin.service.index') }}" class="waves-effect 
+                            {{ Route::is('admin.service.index') ? 'active' : ''  }} 
+                            {{ Route::is('admin.service.create') ? 'active' : ''  }} 
+                            {{ Route::is('admin.service.edit') ? 'active' : ''  }}">
+                                <i class="fas fa-solid fa-tractor"></i>
+                                <span>Services </span>
+                            </a>
+                        </li>
+
                         {{-- <li class="has_sub">
                             <a href="javascript:void(0);" class="waves-effect"><i class="dripicons-jewel"></i> <span> UI Elements </span> <span class="float-right"><i class="mdi mdi-chevron-right"></i></span></a>
                             <ul class="list-unstyled">
