@@ -37,7 +37,7 @@ class StoreFarmRequest extends FormRequest
             'days.*.timings' => 'required', 
             'days.*.location' => 'required', 
             'days.*.lat' => 'required', 
-            'days.*.lng' => 'required', 
+            'days.*.lng' => 'required',
             'timings' => 'required|string',
             'payments' => 'required|array', // of payment IDs
             'payments.*' => 'required|exists:payments,id', // Each payment must exist in the payments table 

@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\FarmController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\PasswordResetController;
 use App\Http\Controllers\Api\SocialLoginController;
+use App\Http\Controllers\Api\SubscriptionController;
 use App\Http\Controllers\Api\UserController;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -66,6 +67,9 @@ Route::middleware('auth:api')->group( function () {
 
     // notifications
     Route::get('/get-notifications', [NotificationController::class, 'getNotifications']); 
+
+    //subscription
+    Route::post('/store-subscription', [SubscriptionController::class, 'storeSubscription']);
 });
 Route::post('/handle-webhook', [ChatController::class, 'handleWebhook']); 
 Route::post('/send-notification', [NotificationController::class, 'sendNotification']); 
