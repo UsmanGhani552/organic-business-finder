@@ -67,7 +67,8 @@ class SubscriptionController extends Controller
 
     public function getSubscription()
     {
-        $subscriptions = Subscription::all();
+        $user_id = auth()->user()->id;
+        $subscriptions = Subscription::where('user_id', $user_id)->get();
         return response()->json($subscriptions, 200);
     }
 }

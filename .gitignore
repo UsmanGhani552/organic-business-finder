@@ -9,3 +9,4 @@ public/hot
 storage/*.key
 storage/clockwork
 firebase-adminsdk.json
+appstore_private_key.pem

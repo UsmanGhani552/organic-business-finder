@@ -70,6 +70,7 @@ Route::middleware('auth:api')->group( function () {
 
     //subscription
     Route::post('/store-subscription', [SubscriptionController::class, 'storeSubscription']);
+    Route::get('/get-subscription', [SubscriptionController::class, 'getSubscription']);
 });
 Route::post('/handle-webhook', [ChatController::class, 'handleWebhook']); 
 Route::post('/send-notification', [NotificationController::class, 'sendNotification']); 
