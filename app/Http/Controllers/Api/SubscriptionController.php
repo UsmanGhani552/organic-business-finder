@@ -72,26 +72,33 @@ class SubscriptionController extends Controller
 
     public function getSubscription()
     {
-        $token = $this->generateAppStoreJWT();
-        $user_id = auth()->user()->id;
-        $subscription = Subscription::where('user_id', $user_id)->first();
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-            'Content-Type' => 'application/json'
-        ])->get("https://api.storekit-sandbox.itunes.apple.com/inApps/v1/subscriptions/{$subscription->transaction_id}");
-        // dd($response->json());
-        $responseData = $response->json();
-        $transaction = $response['data'][0]['lastTransactions'][0];
-        $decodedRenewalInfo = $this->decodeJwtPayload($transaction['signedRenewalInfo']);
-        $decodedTransactionInfo = $this->decodeJwtPayload($transaction['signedTransactionInfo']);
-        // dd($decodedInfo);
-        $responseData['data'][0]['lastTransactions'][0]['decodedRenewalInfo'] = $decodedRenewalInfo;
-        $responseData['data'][0]['lastTransactions'][0]['decodedTransactionInfo'] = $decodedTransactionInfo;
-        unset(
-            $responseData['data'][0]['lastTransactions'][0]['signedTransactionInfo'],
-            $responseData['data'][0]['lastTransactions'][0]['signedRenewalInfo']
-        );
-        return response()->json($responseData, 200);
+        try {
+            $token = $this->generateAppStoreJWT();
+            $user_id = auth()->user()->id;
+            $subscription = Subscription::where('user_id', $user_id)->first();
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $token,
+                'Content-Type' => 'application/json'
+            ])->get("https://api.storekit-sandbox.itunes.apple.com/inApps/v1/subscriptions/{$subscription->transaction_id}");
+            // dd($response->json());
+            if ($response->failed()) {
+                return response()->json(['message' => 'Failed to fetch subscription data from App Store'], 500);
+            }    
+            $responseData = $response->json();
+            $transaction = $response['data'][0]['lastTransactions'][0];
+            $decodedRenewalInfo = $this->decodeJwtPayload($transaction['signedRenewalInfo']);
+            $decodedTransactionInfo = $this->decodeJwtPayload($transaction['signedTransactionInfo']);
+            // dd($decodedInfo);
+            $responseData['data'][0]['lastTransactions'][0]['decodedRenewalInfo'] = $decodedRenewalInfo;
+            $responseData['data'][0]['lastTransactions'][0]['decodedTransactionInfo'] = $decodedTransactionInfo;
+            unset(
+                $responseData['data'][0]['lastTransactions'][0]['signedTransactionInfo'],
+                $responseData['data'][0]['lastTransactions'][0]['signedRenewalInfo']
+            );
+            return response()->json($responseData, 200);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => 'An error occurred', 'error' => $th->getMessage()], 500);
+        }
     }
 
     public function generateAppStoreJWT()
