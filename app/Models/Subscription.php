@@ -20,7 +20,9 @@ class Subscription extends Model
     ];
 
     public static function storeSubscription($data) {
-        self::create($data);
+        self::updateOrcreate(
+            ['user_id'=>$data['user_id']],
+            $data);
     }
 
     

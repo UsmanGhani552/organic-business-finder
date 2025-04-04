@@ -6,10 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\StoreSubscriptionRequest;
 use App\Models\Subscription;
 use Carbon\Carbon;
+use Exception;
+use Firebase\JWT\JWT;
 use GuzzleHttp\Client;
 use Imdhemy\AppStore\Receipts\Verifier as AppStore;
 use Imdhemy\Purchases\Facades\Subscription as AppleSubscription;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Imdhemy\AppStore\ClientFactory;
 use Imdhemy\Purchases\Facades\Product;
@@ -22,6 +25,8 @@ class SubscriptionController extends Controller
     }
     public function storeSubscription(StoreSubscriptionRequest $request)
     {
+        // $current = Carbon::now() + 1200;
+        // $expires_at = 1743059898;
         try {
             if ($request->platform === 'apple') {
                 $subscription = $this->validateIos($request->all());
@@ -67,8 +72,62 @@ class SubscriptionController extends Controller
 
     public function getSubscription()
     {
+        $token = $this->generateAppStoreJWT();
         $user_id = auth()->user()->id;
-        $subscriptions = Subscription::where('user_id', $user_id)->get();
-        return response()->json($subscriptions, 200);
+        $subscription = Subscription::where('user_id', $user_id)->first();
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+            'Content-Type' => 'application/json'
+        ])->get("https://api.storekit-sandbox.itunes.apple.com/inApps/v1/subscriptions/{$subscription->transaction_id}");
+        // dd($response->json());
+        $responseData = $response->json();
+        $transaction = $response['data'][0]['lastTransactions'][0];
+        $decodedRenewalInfo = $this->decodeJwtPayload($transaction['signedRenewalInfo']);
+        $decodedTransactionInfo = $this->decodeJwtPayload($transaction['signedTransactionInfo']);
+        // dd($decodedInfo);
+        $responseData['data'][0]['lastTransactions'][0] = $decodedRenewalInfo;
+        $responseData['data'][0]['lastTransactions'][1] = $decodedTransactionInfo;
+        return response()->json($responseData, 200);
+    }
+
+    public function generateAppStoreJWT()
+    {
+        // 1. Point directly to root directory
+        $keyPath = base_path('appstore_private_key.pem'); // Using your actual key filename
+
+        // 2. Read key contents
+        $keyContent = file_get_contents($keyPath);
+
+        if ($keyContent === false) {
+            throw new Exception("Failed to read private key at: " . $keyPath);
+        }
+
+        // 3. Verify key format
+        if (!str_contains($keyContent, 'BEGIN PRIVATE KEY')) {
+            throw new Exception("Invalid key format - should be PKCS#8 .p8 format");
+        }
+        $keyId = 'U27S2F95YA'; // Your Key ID from App Store Connect
+        $issuerId = '87eea8d3-7b1c-44e1-bd15-768b4ebaa392'; // Your Issuer ID
+        $expiry = time() + 1200; // 20 minutes expiration
+
+        $payload = [
+            'iss' => $issuerId,
+            'iat' => time(),
+            'exp' => $expiry,
+            'aud' => 'appstoreconnect-v1',
+            'bid' => 'com.organicproduce.com' // Your app bundle ID
+        ];
+
+        return JWT::encode($payload, $keyContent, 'ES256', $keyId);
+    }
+
+    public function decodeJwtPayload($jwt)
+    {
+        $parts = explode('.', $jwt);
+        if (count($parts) !== 3) return null;
+
+        $payload = $parts[1];
+        $decoded = base64_decode(strtr($payload, '-_', '+/'));
+        return json_decode($decoded, true);
     }
 }
