@@ -86,7 +86,11 @@ class SubscriptionController extends Controller
         $decodedTransactionInfo = $this->decodeJwtPayload($transaction['signedTransactionInfo']);
         // dd($decodedInfo);
         $responseData['data'][0]['lastTransactions'][0]['decodedRenewalInfo'] = $decodedRenewalInfo;
-$responseData['data'][0]['lastTransactions'][0]['decodedTransactionInfo'] = $decodedTransactionInfo;
+        $responseData['data'][0]['lastTransactions'][0]['decodedTransactionInfo'] = $decodedTransactionInfo;
+        unset(
+            $responseData['data'][0]['lastTransactions'][0]['signedTransactionInfo'],
+            $responseData['data'][0]['lastTransactions'][0]['signedRenewalInfo']
+        );
         return response()->json($responseData, 200);
     }
 
