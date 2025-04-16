@@ -35,7 +35,7 @@ Route::post('/reset-password', [PasswordResetController::class, 'resetPassword']
 
 // Route::post('login', [RegisterController::class, 'login']);
 Route::get('/get-free-trial',function(){
-    $free_trial = getSetting('free_trial_days');
+    $free_trial = getSetting('Free Trial Days');
     return response()->json([
         'status_code' => 200,
         'free_trial' => $free_trial
