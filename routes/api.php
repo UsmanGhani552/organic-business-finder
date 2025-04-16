@@ -34,7 +34,13 @@ Route::post('/verify-otp', [PasswordResetController::class, 'verifyOtp']);
 Route::post('/reset-password', [PasswordResetController::class, 'resetPassword']);
 
 // Route::post('login', [RegisterController::class, 'login']);
-
+Route::get('/get-free-trial',function(){
+    $free_trial = getSetting('free_trial_days');
+    return response()->json([
+        'status_code' => 200,
+        'free_trial' => $free_trial
+    ]);
+});
 
 
 Route::middleware('auth:api')->group( function () {
@@ -72,8 +78,12 @@ Route::middleware('auth:api')->group( function () {
     Route::post('/store-subscription', [SubscriptionController::class, 'storeSubscription']);
     Route::get('/get-subscription', [SubscriptionController::class, 'getSubscription']);
 });
+Route::get('/decode-jwt/{jwt}', [SubscriptionController::class, 'decodeJwtPayload']);
 Route::post('/handle-webhook', [ChatController::class, 'handleWebhook']); 
 Route::post('/send-notification', [NotificationController::class, 'sendNotification']); 
 Route::post('/login/apple', [SocialLoginController::class, 'login']);
 Route::post('/social/login', [SocialLoginController::class, 'socialLogin']);
+Route::post('/iap', [SubscriptionController::class, 'handleNotification'])
+    ->middleware('signed:liap'); // Only if you have signing enabled
+
 

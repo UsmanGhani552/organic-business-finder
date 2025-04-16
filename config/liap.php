@@ -14,11 +14,12 @@ return [
      | You can find more information on documentation.
      | @see https://imdhemy.com/laravel-iap-docs/docs/get-started/routing
      */
+    'register_routes' => false,
 
     'routing' => [
-        'signed' => false,
-        'middleware' => [],
-        'prefix' => '',
+        'signed' => true,
+        'middleware' => ['api'],
+        'prefix' => 'api/iap',
     ],
 
     /*
@@ -70,6 +71,7 @@ return [
         /*  \Imdhemy\Purchases\Events\AppStore\Cancel::class => [
               \App\Listeners\AppStore\Cancel::class,
           ],*/
+          
 
         /*
          |--------------------------------------------------------------------------
@@ -94,11 +96,13 @@ return [
      | authenticate with the App Store server.
      */
     // Your private key ID from App Store Connect (Ex: 2X9R4HXF34)
-    'appstore_private_key_id' => env('APPSTORE_PRIVATE_KEY_ID'),
+    'appstore_private_key_id' => env('APPSTORE_KEY_ID'),
     // The path to your private key file (Ex: /path/to/SuperSecretKey_ABC123.p8)
-    'appstore_private_key' => env('APPSTORE_PRIVATE_KEY'),
+    'appstore_private_key' => env('APPSTORE_PRIVATE_KEY_PATH'),
     // Your issuer ID from the Keys page in App Store Connect (Ex: "57246542-96fe-1a63-e053-0824d011072a")
     'appstore_issuer_id' => env('APPSTORE_ISSUER_ID'),
     // Your app’s bundle ID (Ex: “com.example.testbundleid2021”)
     'appstore_bundle_id' => env('APPSTORE_BUNDLE_ID'),
+
+    // 'webhook_url' => env('APP_URL') . '/liap/notifications?provider=app-store',
 ];

@@ -5,8 +5,10 @@ use App\Http\Controllers\Admin\DeliveryOptionController;
 use App\Http\Controllers\Admin\FarmController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\ServiceController;
+use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\SubscriptionController;
 use App\Http\Controllers\Auth\LoginController;
 use Illuminate\Support\Facades\Route;
 
@@ -86,6 +88,24 @@ Route::middleware(['auth','admin'])->group(function () {
         Route::post('/update/{service}', 'update')->name('update');
         Route::get('/destroy/{service}', 'delete')->name('delete');
     });
+
+    Route::controller(SubscriptionController::class)->prefix('admin/subscription')->name('admin.subscription.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/create', 'create')->name('create');
+        Route::post('/store', 'store')->name('store');
+        Route::get('/edit/{subscription}', 'edit')->name('edit');
+        Route::post('/update/{subscription}', 'update')->name('update');
+        Route::get('/destroy/{subscription}', 'delete')->name('delete');
+    });
+    
+    Route::controller(SettingsController::class)->prefix('admin/settings')->name('admin.settings.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/create', 'create')->name('create');
+        Route::post('/store', 'store')->name('store');
+        Route::get('/edit', 'edit')->name('edit');
+        Route::post('/update', 'update')->name('update');
+        Route::get('/destroy', 'delete')->name('delete');
+    });
 });
 
 Route::view('/test','test');
@@ -94,3 +114,5 @@ Route::post('/test-not', [AuthController::class, 'sendNotification'])->name('fir
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+

@@ -83,7 +83,7 @@ class SubscriptionController extends Controller
             // dd($response->json());
             if ($response->failed()) {
                 return response()->json(['message' => 'Failed to fetch subscription data from App Store'], 500);
-            }    
+            }
             $responseData = $response->json();
             $transaction = $response['data'][0]['lastTransactions'][0];
             $decodedRenewalInfo = $this->decodeJwtPayload($transaction['signedRenewalInfo']);
@@ -140,5 +140,15 @@ class SubscriptionController extends Controller
         $payload = $parts[1];
         $decoded = base64_decode(strtr($payload, '-_', '+/'));
         return json_decode($decoded, true);
+    }
+
+    public function handleNotification(Request $request)
+    {
+        Log::info('ASSN V2 Webhook Received', [
+            'headers' => $request->headers->all(),
+            'body' => $request->getContent(),
+        ]);
+
+        return response()->json(['success' => true]);
     }
 }

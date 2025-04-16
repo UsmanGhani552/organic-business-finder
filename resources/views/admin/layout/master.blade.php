@@ -142,6 +142,16 @@
                             </a>
                         </li>
 
+                        <li>
+                            <a href="{{ route('admin.settings.index') }}" class="waves-effect 
+                            {{ Route::is('admin.settings.index') ? 'active' : ''  }} 
+                            {{ Route::is('admin.settings.create') ? 'active' : ''  }} 
+                            {{ Route::is('admin.settings.edit') ? 'active' : ''  }}">
+                            <i class="fab fa-settings"></i>
+                                <span>Settings</span>
+                            </a>
+                        </li>
+
                         {{-- <li class="has_sub">
                             <a href="javascript:void(0);" class="waves-effect"><i class="dripicons-jewel"></i> <span> UI Elements </span> <span class="float-right"><i class="mdi mdi-chevron-right"></i></span></a>
                             <ul class="list-unstyled">
