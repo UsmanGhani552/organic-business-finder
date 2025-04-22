@@ -143,6 +143,16 @@
                         </li>
 
                         <li>
+                            <a href="{{ route('admin.subscription.index') }}" class="waves-effect 
+                            {{ Route::is('admin.subscription.index') ? 'active' : ''  }} 
+                            {{ Route::is('admin.subscription.create') ? 'active' : ''  }} 
+                            {{ Route::is('admin.subscription.edit') ? 'active' : ''  }}">
+                            <i class="fab fa-subscriptions"></i>
+                                <span>Subscriptions </span>
+                            </a>
+                        </li>
+
+                        <li>
                             <a href="{{ route('admin.settings.index') }}" class="waves-effect 
                             {{ Route::is('admin.settings.index') ? 'active' : ''  }} 
                             {{ Route::is('admin.settings.create') ? 'active' : ''  }} 

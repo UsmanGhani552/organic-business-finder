@@ -16,6 +16,7 @@ class Subscription extends Model
         'platform',
         'transaction_receipt',
         'status',
+        'auto_renew_status',
         'expires_date'
     ];
 
@@ -25,5 +26,14 @@ class Subscription extends Model
             $data);
     }
 
-    
+    public static function changeStatus($subscription,$status,$autoRenewStatus) {
+        $subscription->update([
+            'status' => $status,
+            'auto_renew_status' => $autoRenewStatus,
+        ]);
+    }
+
+    public function user() {
+        return $this->belongsTo(User::class);
+    }    
 }

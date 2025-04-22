@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+use Imdhemy\Purchases\Events\AppStore\Cancel;
+use Imdhemy\Purchases\Events\AppStore\InitialBuy;
+use Imdhemy\Purchases\Events\AppStore\Subscribed;
+
 return [
     /*
      |--------------------------------------------------------------------------
@@ -14,12 +18,11 @@ return [
      | You can find more information on documentation.
      | @see https://imdhemy.com/laravel-iap-docs/docs/get-started/routing
      */
-    'register_routes' => false,
 
     'routing' => [
-        'signed' => true,
-        'middleware' => ['api'],
-        'prefix' => 'api/iap',
+        'signed' => false,
+        'middleware' => [],
+        'prefix' => '',
     ],
 
     /*
@@ -67,11 +70,10 @@ return [
          | @see https://imdhemy.com/laravel-iap-docs/docs/server-notifications/event-list#app-store-events
          |
          */
+        Subscribed::class => [\App\Listeners\AppStore\SubscribtionPurchased::class],
+        Cancel::class => [\App\Listeners\AppStore\CancelSubscription::class],
+        InitialBuy::class => [\App\Listeners\AppStore\SubscribtionPurchased::class],
 
-        /*  \Imdhemy\Purchases\Events\AppStore\Cancel::class => [
-              \App\Listeners\AppStore\Cancel::class,
-          ],*/
-          
 
         /*
          |--------------------------------------------------------------------------
@@ -101,8 +103,8 @@ return [
     'appstore_private_key' => env('APPSTORE_PRIVATE_KEY_PATH'),
     // Your issuer ID from the Keys page in App Store Connect (Ex: "57246542-96fe-1a63-e053-0824d011072a")
     'appstore_issuer_id' => env('APPSTORE_ISSUER_ID'),
-    // Your app’s bundle ID (Ex: “com.example.testbundleid2021”)
+    // Your app's bundle ID (Ex: "com.example.testbundleid2021")
     'appstore_bundle_id' => env('APPSTORE_BUNDLE_ID'),
 
-    // 'webhook_url' => env('APP_URL') . '/liap/notifications?provider=app-store',
+    'webhook_url' => env('APP_URL') . '/liap/notifications?provider=app-store',
 ];

@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\UserController;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Log;
 
 /*
 |--------------------------------------------------------------------------
@@ -83,7 +84,5 @@ Route::post('/handle-webhook', [ChatController::class, 'handleWebhook']);
 Route::post('/send-notification', [NotificationController::class, 'sendNotification']); 
 Route::post('/login/apple', [SocialLoginController::class, 'login']);
 Route::post('/social/login', [SocialLoginController::class, 'socialLogin']);
-Route::post('/iap', [SubscriptionController::class, 'handleNotification'])
-    ->middleware('signed:liap'); // Only if you have signing enabled
 
 

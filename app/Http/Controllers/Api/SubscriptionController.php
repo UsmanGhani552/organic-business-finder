@@ -88,7 +88,13 @@ class SubscriptionController extends Controller
             $transaction = $response['data'][0]['lastTransactions'][0];
             $decodedRenewalInfo = $this->decodeJwtPayload($transaction['signedRenewalInfo']);
             $decodedTransactionInfo = $this->decodeJwtPayload($transaction['signedTransactionInfo']);
-            // dd($decodedInfo);
+
+            // Extract status and autoRenewStatus
+            $status = $transaction['status'] ?? null;
+            $autoRenewStatus = $decodedRenewalInfo['autoRenewStatus'] ?? null;
+            
+            Subscription::changeStatus($subscription, $status, $autoRenewStatus);
+
             $responseData['data'][0]['lastTransactions'][0]['decodedRenewalInfo'] = $decodedRenewalInfo;
             $responseData['data'][0]['lastTransactions'][0]['decodedTransactionInfo'] = $decodedTransactionInfo;
             unset(

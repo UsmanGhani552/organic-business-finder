@@ -24,8 +24,10 @@
                 <table id="datatable" class="table table-striped table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>Icon</th>
+                            <th>Transaction Id</th>
+                            <th>User Name</th>
+                            <th>Status</th>
+                            <th>Cancel Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -34,7 +36,10 @@
                     <tbody>
                         @foreach ($subscriptions as $subscription)
                         <tr>
-                            <td>{{ $subscription->name }}</td>
+                            <td>{{ $subscription->transaction_id }}</td>
+                            <td>{{ $subscription->user->name }}</td>
+                            <td>{{ $subscription->status == 1 ? 'Active' : 'Expired' }}</td>
+                            <td>{{ $subscription->auto_renew_status == 0 ? 'Cancelled' : 'Autorenewable' }}</td>
                             <td>
                                 <a type="button" href="{{ route('admin.subscription.edit',$subscription->id) }}" class="btn btn-sm btn-success text-white">
                                     <i class="fas fa-edit"></i>
