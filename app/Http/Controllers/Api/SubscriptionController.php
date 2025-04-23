@@ -75,6 +75,12 @@ class SubscriptionController extends Controller
         try {
             $user_id = auth()->user()->id;
             $subscription = Subscription::where('user_id', $user_id)->first();
+            if (!$subscription) {
+                return response()->json([
+                    'status_code' => 404,
+                    'message' => 'No Subscription found'
+                ], 404);
+            }
             $response = $this->changeSubscriptionStatus($subscription);
             return response()->json($response, 200);
         } catch (\Throwable $th) {
@@ -85,7 +91,6 @@ class SubscriptionController extends Controller
     public function changeSubscriptionStatus(Subscription $subscription)
     {
         try {
-            // dd($subscription);
             $token = $this->generateAppStoreJWT();
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $token,
