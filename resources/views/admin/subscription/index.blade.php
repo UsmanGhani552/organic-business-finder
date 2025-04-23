@@ -88,6 +88,7 @@ $(document).ready(function () {
             }
             if(i%10 === 0 && i !== 0) {
                 setTimeout(() => {}, 1000); // Optional delay between requests
+            }
         }
     };
 
