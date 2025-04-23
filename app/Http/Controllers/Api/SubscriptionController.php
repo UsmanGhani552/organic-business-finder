@@ -73,9 +73,19 @@ class SubscriptionController extends Controller
     public function getSubscription()
     {
         try {
-            $token = $this->generateAppStoreJWT();
             $user_id = auth()->user()->id;
             $subscription = Subscription::where('user_id', $user_id)->first();
+            $this->changeSubscriptionStatus($subscription);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => 'An error occurred', 'error' => $th->getMessage()], 500);
+        }
+    }
+
+    public function changeSubscriptionStatus(Subscription $subscription)
+    {
+        try {
+            // dd($subscription);
+            $token = $this->generateAppStoreJWT();
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $token,
                 'Content-Type' => 'application/json'
@@ -92,7 +102,7 @@ class SubscriptionController extends Controller
             // Extract status and autoRenewStatus
             $status = $transaction['status'] ?? null;
             $autoRenewStatus = $decodedRenewalInfo['autoRenewStatus'] ?? null;
-            
+
             Subscription::changeStatus($subscription, $status, $autoRenewStatus);
 
             $responseData['data'][0]['lastTransactions'][0]['decodedRenewalInfo'] = $decodedRenewalInfo;

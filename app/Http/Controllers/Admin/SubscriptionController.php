@@ -13,14 +13,6 @@ class SubscriptionController extends Controller
     public function index()
     {
         $subscriptions = Subscription::all();
-
-        foreach ($subscriptions as $subscription) {
-            $response = Http::withToken(auth()->user()->api_token) // Include the auth token
-            ->get(url('/api/get-subscription'), [
-                'user_id' => $subscription->user_id,
-            ]);
-        }
-
         return view('admin.subscription.index',[
             'subscriptions' => $subscriptions
         ]);

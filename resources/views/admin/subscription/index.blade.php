@@ -35,20 +35,20 @@
 
                     <tbody>
                         @foreach ($subscriptions as $subscription)
-                        <tr>
-                            <td>{{ $subscription->transaction_id }}</td>
-                            <td>{{ $subscription->user->name }}</td>
-                            <td>{{ $subscription->status == 1 ? 'Active' : 'Expired' }}</td>
-                            <td>{{ $subscription->auto_renew_status == 0 ? 'Cancelled' : 'Autorenewable' }}</td>
-                            <td>
-                                <a type="button" href="{{ route('admin.subscription.edit',$subscription->id) }}" class="btn btn-sm btn-success text-white">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <a type="button" href="{{ route('admin.subscription.delete',$subscription->id) }}" class="btn btn-sm btn-danger text-white">
-                                    <i class="fas fa-trash-alt"></i>
-                                </a>
-                            </td>
-                        </tr>
+                            <tr class="subscription-row" data-id="{{ $subscription->id }}" data-url="{{ route('api.subscription.status', $subscription->id) }}">
+                                <td>{{ $subscription->transaction_id }}</td>
+                                <td>{{ $subscription->user->name }}</td>
+                                <td class="status-cell text-info"><span class="spinner-border spinner-border-sm"></span> Getting status...</td>
+                                <td class="renewal-cell text-info"><span class="spinner-border spinner-border-sm"></span> Checking...</td>
+                                <td>
+                                    <a type="button" href="{{ route('admin.subscription.edit',$subscription->id) }}" class="btn btn-sm btn-success text-white">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a type="button" href="{{ route('admin.subscription.delete',$subscription->id) }}" class="btn btn-sm btn-danger text-white">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </td>
+                            </tr>
                         @endforeach
 
                     </tbody>
@@ -59,3 +59,39 @@
     </div> <!-- end col -->
 </div> <!-- end row -->
 @endsection
+@push('scripts')
+<script>
+$(document).ready(function () {
+    const rows = $('.subscription-row');
+
+    const fetchStatusSequentially = async () => {
+        for (let i = 0; i < rows.length; i++) {
+            const row = $(rows[i]);
+            const url = row.data('url');
+
+            try {
+                const response = await $.ajax({
+                    url: url,
+                    method: 'GET'
+                });
+
+                const transaction = response?.data?.[0]?.lastTransactions?.[0];
+                const status = transaction?.status === 1 ? 'Active' : 'Expired';
+                const autoRenew = transaction?.decodedRenewalInfo?.autoRenewStatus === 0 ? 'Cancelled' : 'Autorenewable';
+
+                row.find('.status-cell').text(status);
+                row.find('.renewal-cell').text(autoRenew);
+            } catch (error) {
+                row.find('.status-cell').text('Error');
+                row.find('.renewal-cell').text('Error');
+                console.error("Error fetching subscription status", error);
+            }
+            if(i%10 === 0 && i !== 0) {
+                setTimeout(() => {}, 1000); // Optional delay between requests
+        }
+    };
+
+    fetchStatusSequentially(); // call async function
+});
+</script>
+@endpush
