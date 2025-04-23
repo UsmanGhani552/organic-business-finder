@@ -75,7 +75,8 @@ class SubscriptionController extends Controller
         try {
             $user_id = auth()->user()->id;
             $subscription = Subscription::where('user_id', $user_id)->first();
-            $this->changeSubscriptionStatus($subscription);
+            $response = $this->changeSubscriptionStatus($subscription);
+            return response()->json($response, 200);
         } catch (\Throwable $th) {
             return response()->json(['message' => 'An error occurred', 'error' => $th->getMessage()], 500);
         }
@@ -98,22 +99,23 @@ class SubscriptionController extends Controller
             $transaction = $response['data'][0]['lastTransactions'][0];
             $decodedRenewalInfo = $this->decodeJwtPayload($transaction['signedRenewalInfo']);
             $decodedTransactionInfo = $this->decodeJwtPayload($transaction['signedTransactionInfo']);
-
+            
             // Extract status and autoRenewStatus
             $status = $transaction['status'] ?? null;
             $autoRenewStatus = $decodedRenewalInfo['autoRenewStatus'] ?? null;
-
+            
             Subscription::changeStatus($subscription, $status, $autoRenewStatus);
-
+            
             $responseData['data'][0]['lastTransactions'][0]['decodedRenewalInfo'] = $decodedRenewalInfo;
             $responseData['data'][0]['lastTransactions'][0]['decodedTransactionInfo'] = $decodedTransactionInfo;
             unset(
                 $responseData['data'][0]['lastTransactions'][0]['signedTransactionInfo'],
                 $responseData['data'][0]['lastTransactions'][0]['signedRenewalInfo']
             );
-            return response()->json($responseData, 200);
+            // dd($responseData);
+            return $responseData;
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'An error occurred', 'error' => $th->getMessage()], 500);
+            throw $th;
         }
     }
 

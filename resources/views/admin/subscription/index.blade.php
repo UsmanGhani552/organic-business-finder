@@ -62,37 +62,45 @@
 @push('scripts')
 <script>
 $(document).ready(function () {
-    const rows = $('.subscription-row');
 
-    const fetchStatusSequentially = async () => {
+    const fetchStatusSequentially = async (rows) => {
         for (let i = 0; i < rows.length; i++) {
-            const row = $(rows[i]);
-            const url = row.data('url');
+            let row = $(rows[i]);
+            let url = row.data('url');
 
-            try {
-                const response = await $.ajax({
-                    url: url,
-                    method: 'GET'
-                });
+            $.ajax({
+                url: url,
+                method: 'GET',
+                success: function(response) {
+                    const transaction = response?.data?.[0]?.lastTransactions?.[0];
+                    const status = transaction?.status === 1 ? 'Active' : 'Expired';
+                    const autoRenew = transaction?.decodedRenewalInfo?.autoRenewStatus === 0 ? 'Cancelled' : 'Autorenewable';
 
-                const transaction = response?.data?.[0]?.lastTransactions?.[0];
-                const status = transaction?.status === 1 ? 'Active' : 'Expired';
-                const autoRenew = transaction?.decodedRenewalInfo?.autoRenewStatus === 0 ? 'Cancelled' : 'Autorenewable';
-
-                row.find('.status-cell').text(status);
-                row.find('.renewal-cell').text(autoRenew);
-            } catch (error) {
-                row.find('.status-cell').text('Error');
-                row.find('.renewal-cell').text('Error');
-                console.error("Error fetching subscription status", error);
-            }
-            if(i%10 === 0 && i !== 0) {
-                setTimeout(() => {}, 1000); // Optional delay between requests
+                    row.find('.status-cell').text(status);
+                    row.find('.renewal-cell').text(autoRenew);
+                },
+                error: function(error) {
+                    row.find('.status-cell').text('Error');
+                    row.find('.renewal-cell').text('Error');
+                    console.error("Error fetching subscription status", error);
+                },
+            });
+            if((i + 1)%5 === 0) {
+                await new Promise(resolve => setTimeout(resolve, 1000)); // Wait for 1 second before the next request
+                console.log("Waiting for 1 second before next request...");
             }
         }
     };
 
-    fetchStatusSequentially(); // call async function
+    const rowsOriginal = $('.subscription-row');
+    fetchStatusSequentially(rowsOriginal); // call async function
+
+    const table = $('#datatable').DataTable(); 
+    table.on('draw', function () {
+        console.log('Table redrawn, fetching status again...');
+        const rowsOriginal = $('.subscription-row');
+        fetchStatusSequentially(rowsOriginal);
+    });
 });
 </script>
 @endpush
