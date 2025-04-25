@@ -12,10 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->boolean('is_free_trial')->default(false)->after('certificate');
+            $table->boolean('is_free_trial')->nullable()->after('certificate');
             $table->timestamp('free_trial_started_at')->nullable()->after('is_free_trial');
             $table->timestamp('free_trial_ends_at')->nullable()->after('free_trial_started_at');
-            $table->boolean('subscription_status')->default(false)->after('free_trial_ends_at');
+            $table->boolean('subscription_status')->nullable()->after('free_trial_ends_at');
         });
     }
 

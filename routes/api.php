@@ -35,7 +35,7 @@ Route::post('/verify-otp', [PasswordResetController::class, 'verifyOtp']);
 Route::post('/reset-password', [PasswordResetController::class, 'resetPassword']);
 
 // Route::post('login', [RegisterController::class, 'login']);
-Route::get('/get-free-trial',function(){
+Route::get('/free-trials',function(){
     $free_trial = getSetting('Free Trial Days');
     return response()->json([
         'status_code' => 200,
