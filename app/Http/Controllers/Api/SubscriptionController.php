@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\StoreSubscriptionRequest;
+use App\Models\Setting;
 use App\Models\Subscription;
+use App\Models\User;
 use Carbon\Carbon;
 use Exception;
 use Firebase\JWT\JWT;
@@ -25,8 +27,6 @@ class SubscriptionController extends Controller
     }
     public function storeSubscription(StoreSubscriptionRequest $request)
     {
-        // $current = Carbon::now() + 1200;
-        // $expires_at = 1743059898;
         try {
             if ($request->platform === 'apple') {
                 $subscription = $this->validateIos($request->all());
@@ -51,14 +51,15 @@ class SubscriptionController extends Controller
             $receiptInfo = $latestReceiptInfo[0];
             // You can loop all of them or either get the first one (recently purchased).
             $expiresDate = $receiptInfo->getExpiresDate()->toDateTime();
-
             $data = [
                 'user_id' => auth()->user()->id,
-                'transaction_id' => $receiptInfo->getTransactionId(),
+                'transaction_id' => $receiptInfo->getOriginalTransactionId(),
                 'product_id' => $receiptInfo->getProductId(),
                 'platform' => $data['platform'],
                 'transaction_receipt' => $receipt,
                 'status' => 1,
+                'subscription_status' => 1,
+                'auto_renew_status' => 1,
                 'expires_date' => $expiresDate,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
@@ -75,6 +76,7 @@ class SubscriptionController extends Controller
         try {
             $user_id = auth()->user()->id;
             $subscription = Subscription::where('user_id', $user_id)->first();
+            
             if (!$subscription) {
                 return response()->json([
                     'status_code' => 404,
@@ -82,7 +84,7 @@ class SubscriptionController extends Controller
                 ], 404);
             }
             $response = $this->changeSubscriptionStatus($subscription);
-            return response()->json($response, 200);
+            return $response;
         } catch (\Throwable $th) {
             return response()->json(['message' => 'An error occurred', 'error' => $th->getMessage()], 500);
         }
@@ -165,13 +167,16 @@ class SubscriptionController extends Controller
         return json_decode($decoded, true);
     }
 
-    public function handleNotification(Request $request)
-    {
-        Log::info('ASSN V2 Webhook Received', [
-            'headers' => $request->headers->all(),
-            'body' => $request->getContent(),
-        ]);
-
-        return response()->json(['success' => true]);
+    public function getFreeTrial() {
+        try {
+            $user = auth()->user();
+            if ($user->is_free_trial) {
+                return response()->json(['message' => 'Free trial already started'], 400);
+            }
+            $user->startFreeTrial();
+            return response()->json(['message' => 'Free trial started successfully'], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => 'An error occurred', 'error' => $th->getMessage()], 500);
+        }
     }
 }

@@ -33,6 +33,9 @@ class User extends Authenticatable
         'image',
         'otp',
         'certificate',
+        'is_free_trial',
+        'free_trial_started_at',
+        'free_trial_ends_at',
         'otp_expires_at'
 
     ];
@@ -116,6 +119,20 @@ class User extends Authenticatable
         $user->update($data);
     }
 
+    public function startFreeTrial() {
+        $this->update([
+            'is_free_trial' => true,
+            'free_trial_started_at' => now(),
+            'free_trial_ends_at' => now()->addDays(getSetting('Free Trial Days')),
+        ]);
+    }
+
+    public function endFreeTrial() {
+        $this->update([
+            'is_free_trial' => false,
+        ]);
+    }
+
     public function farms()
     {
         return $this->hasMany(Farm::class);
@@ -131,5 +148,9 @@ class User extends Authenticatable
         return $this->belongsToMany(Farm::class, 'saved_farms')
             ->withPivot('save') // Include the 'save' attribute
             ->withTimestamps();;
+    }
+
+    public function subscription() {
+        return $this->hasOne(Subscription::class);
     }
 }
