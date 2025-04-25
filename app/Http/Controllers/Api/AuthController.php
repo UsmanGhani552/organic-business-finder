@@ -46,7 +46,7 @@ class AuthController extends Controller
             if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
                 $user = Auth::user();
                 
-                if ($user->type == 'farmer' && $user->subscription_status == 0) {
+                if ($user->type == 'farmer' && $user->subscription_status == 0 || $user->subscription_status == null) {
                     if ($user->is_free_trial && $user->free_trial_ends_at < now()) {
                         $user->endFreeTrial();
                     }
