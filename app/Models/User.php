@@ -36,6 +36,7 @@ class User extends Authenticatable
         'is_free_trial',
         'free_trial_started_at',
         'free_trial_ends_at',
+        'subscription_status',
         'otp_expires_at'
 
     ];
