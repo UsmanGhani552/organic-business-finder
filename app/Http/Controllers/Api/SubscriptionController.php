@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\StoreSubscriptionRequest;
+use App\Models\Membership;
 use App\Models\Setting;
 use App\Models\Subscription;
 use App\Models\User;
@@ -175,6 +176,18 @@ class SubscriptionController extends Controller
             }
             $user->startFreeTrial();
             return response()->json(['message' => 'Free trial started successfully'], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => 'An error occurred', 'error' => $th->getMessage()], 500);
+        }
+    }
+
+    public function getSubscriptionPlans() {
+        try {
+            $memberships = Membership::all();
+            return response()->json([
+                'status_code' => 200,
+                'memberships' => $memberships
+            ], 200);
         } catch (\Throwable $th) {
             return response()->json(['message' => 'An error occurred', 'error' => $th->getMessage()], 500);
         }

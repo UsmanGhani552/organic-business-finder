@@ -84,7 +84,7 @@ class UserController extends Controller
             ], 400);
         }
     }
-    
+
     public function deleteAccount()
     {
         try {
@@ -109,7 +109,9 @@ class UserController extends Controller
         try {
             (new SubscriptionController())->getSubscription();
             $user = Auth::user();
-            $user->load('subscription');
+            if($user->type == 'farmer'){
+                $user->load('subscription');
+            }
             return response()->json([
                 'status_code' => 200,
                 'user' => $user,

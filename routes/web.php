@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DeliveryOptionController;
 use App\Http\Controllers\Admin\FarmController;
+use App\Http\Controllers\Admin\MembershipController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\SettingsController;
@@ -87,6 +88,15 @@ Route::middleware(['auth','admin'])->group(function () {
         Route::get('/edit/{service}', 'edit')->name('edit');
         Route::post('/update/{service}', 'update')->name('update');
         Route::get('/destroy/{service}', 'delete')->name('delete');
+    });
+
+    Route::controller(MembershipController::class)->prefix('admin/membership')->name('admin.membership.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/create', 'create')->name('create');
+        Route::post('/store', 'store')->name('store');
+        Route::get('/edit/{membership}', 'edit')->name('edit');
+        Route::post('/update/{membership}', 'update')->name('update');
+        Route::get('/destroy/{membership}', 'delete')->name('delete');
     });
 
     Route::controller(SubscriptionController::class)->prefix('admin/subscription')->name('admin.subscription.')->group(function () {

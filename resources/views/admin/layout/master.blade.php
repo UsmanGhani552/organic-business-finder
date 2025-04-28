@@ -143,6 +143,16 @@
                         </li>
 
                         <li>
+                            <a href="{{ route('admin.membership.index') }}" class="waves-effect 
+                            {{ Route::is('admin.membership.index') ? 'active' : ''  }} 
+                            {{ Route::is('admin.membership.create') ? 'active' : ''  }} 
+                            {{ Route::is('admin.membership.edit') ? 'active' : ''  }}">
+                            <i class="fab fa-servicestack"></i>
+                                <span>Memberships </span>
+                            </a>
+                        </li>
+
+                        <li>
                             <a href="{{ route('admin.subscription.index') }}" class="waves-effect 
                             {{ Route::is('admin.subscription.index') ? 'active' : ''  }} 
                             {{ Route::is('admin.subscription.create') ? 'active' : ''  }} 

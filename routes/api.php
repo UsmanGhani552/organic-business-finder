@@ -81,6 +81,7 @@ Route::middleware('auth:api')->group( function () {
     Route::get('/get-free-trial', [SubscriptionController::class, 'getFreeTrial']);
 });
 Route::get('/change-subscription-status/{subscription}', [SubscriptionController::class, 'changeSubscriptionStatus'])->name('api.subscription.status');
+Route::get('/get-subscription-plans', [SubscriptionController::class, 'getSubscriptionPlans']);
 Route::get('/decode-jwt/{jwt}', [SubscriptionController::class, 'decodeJwtPayload']);
 Route::post('/handle-webhook', [ChatController::class, 'handleWebhook']); 
 Route::post('/send-notification', [NotificationController::class, 'sendNotification']); 
