@@ -213,12 +213,6 @@ class SubscriptionController extends Controller
     public function getSubscriptionPlans()
     {
         try {
-            $token = $this->generateAppStoreConnectJWT();
-            $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $token,
-                'Content-Type' => 'application/json'
-            ])->get('https://api.appstoreconnect.apple.com/v1/subscriptions');
-            dd($response->json());
             $memberships = Membership::all();
             return response()->json([
                 'status_code' => 200,
