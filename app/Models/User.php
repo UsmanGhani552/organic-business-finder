@@ -140,6 +140,12 @@ class User extends Authenticatable
         ]);
     }
 
+    public function stopSubscription() {
+        $this->update([
+            'subscription_status' => 0,
+        ]);
+    }
+
     public function farms()
     {
         return $this->hasMany(Farm::class);

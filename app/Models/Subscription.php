@@ -39,6 +39,12 @@ class Subscription extends Model
             'status' => $status,
             'auto_renew_status' => $autoRenewStatus,
         ]);
+        if($subscription->status == 2) {
+            $user = User::find($subscription->user_id);
+            if ($user) {
+                $user->stopSubscription();
+            }
+        }
     }
 
     public function user()
