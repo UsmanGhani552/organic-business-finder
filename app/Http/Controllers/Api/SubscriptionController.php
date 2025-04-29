@@ -49,7 +49,8 @@ class SubscriptionController extends Controller
         $receiptStatus = $receiptResponse->getStatus();
         if ($receiptStatus->isValid()) {
             $latestReceiptInfo = $receiptResponse->getLatestReceiptInfo();
-            $receiptInfo = $latestReceiptInfo[0];
+            $receiptInfo = $latestReceiptInfo;
+            dd($receiptInfo);
             // You can loop all of them or either get the first one (recently purchased).
             $expiresDate = $receiptInfo->getExpiresDate()->toDateTime();
             $data = [

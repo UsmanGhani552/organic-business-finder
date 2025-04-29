@@ -24,7 +24,7 @@ class Subscription extends Model
     public static function storeSubscription($data)
     {
         Subscription::updateOrCreate(
-            ['original_transaction_id' => $data['original_transaction_id']],
+            ['user_id' => $data['user_id'],'original_transaction_id' => $data['original_transaction_id']],
             $data
         );
         $user = User::find($data['user_id']);
