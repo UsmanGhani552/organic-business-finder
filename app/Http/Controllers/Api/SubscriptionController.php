@@ -54,7 +54,8 @@ class SubscriptionController extends Controller
             $expiresDate = $receiptInfo->getExpiresDate()->toDateTime();
             $data = [
                 'user_id' => auth()->user()->id,
-                'transaction_id' => $receiptInfo->getOriginalTransactionId(),
+                'original_transaction_id' => $receiptInfo->getOriginalTransactionId(),
+                'transaction_id' => $receiptInfo->getTransactionId(),
                 'product_id' => $receiptInfo->getProductId(),
                 'platform' => $data['platform'],
                 'transaction_receipt' => $receipt,
@@ -77,7 +78,7 @@ class SubscriptionController extends Controller
         try {
             $user_id = auth()->user()->id;
             $subscription = Subscription::where('user_id', $user_id)->first();
-            
+
             if (!$subscription) {
                 return response()->json([
                     'status_code' => 404,
@@ -107,13 +108,13 @@ class SubscriptionController extends Controller
             $transaction = $response['data'][0]['lastTransactions'][0];
             $decodedRenewalInfo = $this->decodeJwtPayload($transaction['signedRenewalInfo']);
             $decodedTransactionInfo = $this->decodeJwtPayload($transaction['signedTransactionInfo']);
-            
+
             // Extract status and autoRenewStatus
             $status = $transaction['status'] ?? null;
             $autoRenewStatus = $decodedRenewalInfo['autoRenewStatus'] ?? null;
-            
+
             Subscription::changeStatus($subscription, $status, $autoRenewStatus);
-            
+
             $responseData['data'][0]['lastTransactions'][0]['decodedRenewalInfo'] = $decodedRenewalInfo;
             $responseData['data'][0]['lastTransactions'][0]['decodedTransactionInfo'] = $decodedTransactionInfo;
             unset(
@@ -158,6 +159,32 @@ class SubscriptionController extends Controller
         return JWT::encode($payload, $keyContent, 'ES256', $keyId);
     }
 
+    public function generateAppStoreConnectJWT()
+    {
+        $keyPath = base_path('appstore_private_key.pem'); // Your .p8 private key
+        $keyContent = file_get_contents($keyPath);
+
+        if ($keyContent === false) {
+            throw new Exception("Failed to read private key at: " . $keyPath);
+        }
+
+        if (!str_contains($keyContent, 'BEGIN PRIVATE KEY')) {
+            throw new Exception("Invalid key format - should be PKCS#8 .p8 format");
+        }
+
+        $keyId = 'U27S2F95YA'; // Your Key ID
+        $issuerId = '87eea8d3-7b1c-44e1-bd15-768b4ebaa392'; // Your Issuer ID
+        $expiry = time() + (20 * 60); // 20 minutes from now
+
+        $payload = [
+            'iss' => $issuerId,
+            'exp' => $expiry,
+            'aud' => 'appstoreconnect-v1',
+        ];
+
+        return JWT::encode($payload, $keyContent, 'ES256', $keyId);
+    }
+
     public function decodeJwtPayload($jwt)
     {
         $parts = explode('.', $jwt);
@@ -168,7 +195,8 @@ class SubscriptionController extends Controller
         return json_decode($decoded, true);
     }
 
-    public function getFreeTrial() {
+    public function getFreeTrial()
+    {
         try {
             $user = auth()->user();
             if ($user->is_free_trial) {
@@ -181,8 +209,15 @@ class SubscriptionController extends Controller
         }
     }
 
-    public function getSubscriptionPlans() {
+    public function getSubscriptionPlans()
+    {
         try {
+            $token = $this->generateAppStoreConnectJWT();
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $token,
+                'Content-Type' => 'application/json'
+            ])->get('https://api.appstoreconnect.apple.com/v1/subscriptions');
+            dd($response->json());
             $memberships = Membership::all();
             return response()->json([
                 'status_code' => 200,

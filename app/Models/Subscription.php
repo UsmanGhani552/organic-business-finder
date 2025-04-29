@@ -11,6 +11,7 @@ class Subscription extends Model
 
     protected $fillable = [
         'user_id',
+        'original_transaction_id',
         'transaction_id',
         'product_id',
         'platform',
@@ -20,25 +21,28 @@ class Subscription extends Model
         'expires_date'
     ];
 
-    public static function storeSubscription($data) {
-        self::updateOrcreate(
-            ['user_id' => $data['user_id']],
-            $data);
-            $user = User::find($data['user_id']); 
-            if ($user) {
-                $user->startSubscription();
-            }
-
+    public static function storeSubscription($data)
+    {
+        Subscription::updateOrCreate(
+            ['original_transaction_id' => $data['original_transaction_id']],
+            $data
+        );
+        $user = User::find($data['user_id']);
+        if ($user) {
+            $user->startSubscription();
+        }
     }
 
-    public static function changeStatus($subscription,$status,$autoRenewStatus) {
+    public static function changeStatus($subscription, $status, $autoRenewStatus)
+    {
         $subscription->update([
             'status' => $status,
             'auto_renew_status' => $autoRenewStatus,
         ]);
     }
 
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo(User::class);
-    }    
+    }
 }
