@@ -23,6 +23,15 @@
                                 enctype="multipart/form-data">
                                 @csrf
                                 <div class="form-group row">
+                                    <label for="example-text-input" class="col-sm-2 col-form-label">Product ID</label>
+                                    <div class="col-sm-10">
+                                        <input class="form-control" type="text" name="name" id="example-text-input">
+                                        @error('product_id')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="form-group row">
                                     <label for="example-text-input" class="col-sm-2 col-form-label">Name</label>
                                     <div class="col-sm-10">
                                         <input class="form-control" type="text" name="name" id="example-text-input">

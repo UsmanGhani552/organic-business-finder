@@ -22,6 +22,7 @@ class StoreMembershipRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'product_id' => 'required|string|max:255',
             'name' => 'required|string|max:255',
             'price' => 'required|numeric',
             'description' => 'required|array',

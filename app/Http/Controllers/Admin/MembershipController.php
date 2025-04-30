@@ -20,7 +20,6 @@ class MembershipController extends Controller
         return view('admin.membership.create');
     }
     public function store(StoreMembershipRequest $request) {
-        // dd($request->all());
         try {
             Membership::storeMembership($request->all());
         } catch (\Throwable $th) {

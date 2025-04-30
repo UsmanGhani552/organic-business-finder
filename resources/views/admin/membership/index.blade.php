@@ -24,6 +24,7 @@
                 <table id="datatable" class="table table-striped table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                     <thead>
                         <tr>
+                            <th>Product ID</th>
                             <th>Name</th>
                             <th>Price</th>
                             <th>Description</th>
@@ -35,6 +36,7 @@
                     <tbody>
                         @foreach ($memberships as $membership)
                         <tr>
+                            <td>{{ $membership->product_id }}</td>
                             <td>{{ $membership->name }}</td>
                             <td>{{ $membership->price }}</td>
                             <td>

@@ -9,7 +9,7 @@ class Membership extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'price', 'description'];
+    protected $fillable = ['product_id', 'name' , 'price' , 'description'];
 
     protected $casts = [
         'description' => 'array'
