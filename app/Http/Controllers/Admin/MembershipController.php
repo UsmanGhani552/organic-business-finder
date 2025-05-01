@@ -45,7 +45,7 @@ class MembershipController extends Controller
         
     }
 
-    public function destroy(Membership $membership) {
+    public function delete(Membership $membership) {
         try {
             $membership->delete();
         } catch (\Throwable $th) {
