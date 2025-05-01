@@ -44,4 +44,14 @@ class MembershipController extends Controller
         return redirect()->route('admin.membership.index')->with('success', 'Membership updated successfully');
         
     }
+
+    public function destroy(Membership $membership) {
+        try {
+            $membership->delete();
+        } catch (\Throwable $th) {
+            return redirect()->route('admin.membership.index')->with('error', 'Something went wrong');
+        }
+        return redirect()->route('admin.membership.index')->with('success', 'Membership deleted successfully');
+        
+    }
 }
