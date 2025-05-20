@@ -11,6 +11,7 @@ use Firebase\JWT\Key;
 use Illuminate\Http\Request;
 use Illuminate\Support\Env;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Laravel\Socialite\Facades\Socialite;
 
 class SocialLoginController extends Controller
@@ -69,11 +70,14 @@ class SocialLoginController extends Controller
         }
     }
 
-    public function socialLogin(Request $request) {
+    public function socialLogin(Request $request)
+    {
         try {
             //code... 
-            // dd($request->token);
-            $userDetails = Socialite::driver('google')->userFromToken($request->token);
+            $idToken = $request->token;
+            $userData = json_decode(base64_decode(explode('.', $idToken)[1]), true);
+            dd($userData);
+            // $userDetails = Socialite::driver('google')->userFromToken($accessToken);
             dd($userDetails);
             $user = User::where('social_id', $request->social_id)->where('provider', $request->provider)->first();
             if (!$user) {
@@ -81,7 +85,7 @@ class SocialLoginController extends Controller
                 $user = User::create([
                     'name' => $userDetails->name,
                     'email' => $userDetails->email,
-                    'password' => Hash ::make('user1234'),  
+                    'password' => Hash::make('user1234'),
                     'social_id' => $userDetails->social_id,
                     'provider' => $userDetails->provider,
                 ]);

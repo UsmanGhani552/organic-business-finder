@@ -56,6 +56,7 @@ class FirebaseService
     public function sendNotificationToMultipleDevices($deviceTokens, $title, $body, $imageUrl = null, $data = [])
     {
         try {
+            // dd('asd');
             $notification = Notification::create($title, $body, asset('notifications/'.$imageUrl));
             $messages = [];
             $uniqueUsers = $deviceTokens->unique('user_id');
