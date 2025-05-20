@@ -35,5 +35,12 @@ return [
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
         'redirect' => 'http://127.0.0.1:8000/auth/google/callback',
     ],
+    'apple' => [
+        'client_id' => env('APPSTORE_CLIENT_ID'),
+        'client_secret' => env('APPSTORE_CLIENT_SECRET'),
+        'team_id' => env('APPSTORE_TEAM_ID'),
+        'key_id' => env('APPSTORE_KEY_ID'),
+        'private_key' => env('APPSTORE_PRIVATE_KEY_PATH'),
+    ],
 
 ];

@@ -50,6 +50,7 @@ class SubscriptionController extends Controller
         if ($receiptStatus->isValid()) {
             $latestReceiptInfo = $receiptResponse->getLatestReceiptInfo();
             $receiptInfo = $latestReceiptInfo[0];
+            dd($receiptInfo);
             // You can loop all of them or either get the first one (recently purchased).
             $expiresDate = $receiptInfo->getExpiresDate()->toDateTime();
             $data = [
@@ -136,14 +137,6 @@ class SubscriptionController extends Controller
         // 2. Read key contents
         $keyContent = file_get_contents($keyPath);
 
-        if ($keyContent === false) {
-            throw new Exception("Failed to read private key at: " . $keyPath);
-        }
-
-        // 3. Verify key format
-        if (!str_contains($keyContent, 'BEGIN PRIVATE KEY')) {
-            throw new Exception("Invalid key format - should be PKCS#8 .p8 format");
-        }
         $keyId = 'U27S2F95YA'; // Your Key ID from App Store Connect
         $issuerId = '87eea8d3-7b1c-44e1-bd15-768b4ebaa392'; // Your Issuer ID
         $expiry = time() + 1200; // 20 minutes expiration

@@ -7,6 +7,7 @@ use App\Http\Requests\Api\LoginUserRequest;
 use App\Http\Requests\Api\RegisterUserRequest;
 use App\Models\DeviceToken;
 use App\Models\User;
+use App\Services\AppleToken;
 use App\Services\FirebaseService;
 use Exception;
 use Illuminate\Auth\Events\Login;
@@ -16,6 +17,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Kreait\Firebase\Exception\Messaging\NotFound;
+use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
 {
@@ -91,5 +93,13 @@ class AuthController extends Controller
         }
     }
 
-    public function getName() {}
+    public function loginWithGoogle(Request $request,AppleToken $appleToken) {
+        try {
+            $token = $request->input('token');
+            config()->set('services.apple.client_secret', $appleToken->generate());
+            $user = Socialite::driver('apple')->userFromToken($token);
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+    }
 }
