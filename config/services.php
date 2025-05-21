@@ -37,10 +37,11 @@ return [
     ],
     'apple' => [
         'client_id' => env('APPSTORE_CLIENT_ID'),
-        'client_secret' => env('APPSTORE_CLIENT_SECRET'),
+        'client_secret' => null,
         'team_id' => env('APPSTORE_TEAM_ID'),
         'key_id' => env('APPSTORE_KEY_ID'),
         'private_key' => env('APPSTORE_PRIVATE_KEY_PATH'),
+        'redirect' => 'http://localhost:8000/auth/callback',
     ],
 
 ];

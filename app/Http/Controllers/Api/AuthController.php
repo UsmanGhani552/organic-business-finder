@@ -96,25 +96,40 @@ class AuthController extends Controller
 
     public function socialLogin(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $rules = [
             'type' => 'required|in:visitor,farmer',
             'provider' => 'required|in:google,apple',
-            'token' => 'required',
             'fcm_token' => 'required',
-        ]);
+            'social_id' => 'required', // Always required for both providers
+        ];
+
+        if ($request->provider == 'google') {
+            $rules['name'] = 'required|string';
+            $rules['email'] = 'required|email';
+        }
+
+        $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
             return response()->json([
                 'status_code' => 400,
                 'errors' => $validator->errors(),
             ], 422);
         }
-        try {
-            $user = null;
-            if ($request->provider == 'google') {
-                $user = $this->loginWithGoogle($request);
-            } else {
-                $this->loginWithApple($request);
+        if ($request->has('email')) {
+            $existingUser = User::where('email', $request->email)
+                ->where('provider', '!=', $request->provider)
+                ->first();
+
+            if ($existingUser) {
+                return response()->json([
+                    'status_code' => 409, // 409 Conflict is more appropriate
+                    'message' => 'This email is already associated with a different login provider',
+                    'existing_provider' => $existingUser->provider
+                ], 409);
             }
+        }
+        try {
+            $user = $this->handleLogin($request);
             return response()->json([
                 'status_code' => 200,
                 'message' => 'User Login Successfully',
@@ -126,50 +141,17 @@ class AuthController extends Controller
         }
     }
 
-    private function loginWithApple($request, $appleToken = null)
+    private function handleLogin($request)
     {
         try {
-            $token = $request->input('token');
-            config()->set('services.apple.client_secret',$appleToken);
-            $appleUser = Socialite::driver('apple')->userFromToken($token);
-            $user = User::where('google_id', $appleUser->id)->first();
+            $user = User::where('social_id', $request->social_id)->where('provider', $request->provider)->first();
             if (!$user) {
-                $user = User::updateOrCreate(['email' => $user->email], [
-                    'name' => $user->name,
-                    'apple_id' => $user->id,
-                    'password' => encrypt('12345678')
-                ]);
-            }
-            $user->saveFcmToken($request->fcm_token);
-            $token = $user->createToken('Organic-Business-Finder')->accessToken;
-            return response()->json([
-                'status_code' => 200,
-                'message' => 'User Login Successfully',
-                'user' => $user,
-                'token' => $token
-            ], 200);
-        } catch (\Throwable $th) {
-            // Handle the exception
-            return response()->json([
-                'status_code' => 400,
-                'message' => $th->getMessage(),
-            ], 400);
-        }
-    }
-
-    private function loginWithGoogle($request)
-    {
-        try {
-            $token = $request->input('token');
-            $userData = json_decode(base64_decode(explode('.', $token)[1]), true);
-
-            $user = User::where('social_id', $userData['sub'])->first();
-            if (!$user) {
-                $user = User::updateOrCreate(['email' => $userData['email']], [
-                    'name' => $userData['name'],
-                    'social_id' => $userData['sub'],
-                    'provider' => 'google',
-                    'type' => $request['type'],
+                $user = User::create([
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'social_id' => $request->social_id,
+                    'provider' => $request->provider,
+                    'type' => $request->type,
                     'password' => Hash::make('12345678'),
                 ]);
             }
@@ -178,7 +160,7 @@ class AuthController extends Controller
             $user['token'] = $token;
             return $user;
         } catch (\Throwable $th) {
-           throw $th;
+            throw $th;
         }
     }
 }
