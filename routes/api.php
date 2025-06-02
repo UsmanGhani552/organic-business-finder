@@ -58,28 +58,30 @@ Route::middleware('auth:api')->group( function () {
     Route::post('/store-farm', [FarmController::class, 'storeFarm']);
     Route::post('/update-farm/{farm}', [FarmController::class, 'updateFarm']);
     Route::get('/get-farms', [FarmController::class, 'getFarms']);
-    Route::get('/get-featured-farms', [FarmController::class, 'getFeaturedFarms']);
-    Route::get('/get-farm-related-data', [FarmController::class, 'getFarmRelatedData']);
-    Route::get('/get-near-by-farms', [FarmController::class, 'getNearByFarms']);
     Route::get('/delete-farm/{farm}', [FarmController::class, 'deleteFarm']);
-
     Route::post('/toggle-saved-farm', [FarmController::class, 'toggleSavedFarm']);
     Route::get('/get-saved-farms', [FarmController::class, 'getSavedFarms']);
-
+    
+    
     Route::post('/chats/send', [ChatController::class, 'sendMessage']); // Send message
     Route::get('/chats/{userId}', [ChatController::class, 'fetchChats']); // Fetch chat messages
     Route::get('/chats/unread/{userId}', [ChatController::class, 'unreadCount']); // Unread messages
     Route::get('/get-my-chats', [ChatController::class, 'getMyChats']); 
     Route::get('/total-unread-count', [ChatController::class, 'totalUnreadCount']); 
-
+    
     // notifications
     Route::get('/get-notifications', [NotificationController::class, 'getNotifications']); 
-
+    
     //subscription
     Route::post('/store-subscription', [SubscriptionController::class, 'storeSubscription']);
     Route::get('/get-subscription', [SubscriptionController::class, 'getSubscription']);
     Route::get('/get-free-trial', [SubscriptionController::class, 'getFreeTrial']);
 });
+Route::get('/get-featured-farms', [FarmController::class, 'getFeaturedFarms']);
+Route::get('/get-farm-related-data', [FarmController::class, 'getFarmRelatedData']);
+Route::get('/get-near-by-farms', [FarmController::class, 'getNearByFarms']);
+
+
 Route::get('/change-subscription-status/{subscription}', [SubscriptionController::class, 'changeSubscriptionStatus'])->name('api.subscription.status');
 Route::get('/get-subscription-plans', [SubscriptionController::class, 'getSubscriptionPlans']);
 Route::get('/decode-jwt/{jwt}', [SubscriptionController::class, 'decodeJwtPayload']);
