@@ -34,7 +34,7 @@ return [
      | provided while verifying the receipts.
      |
      */
-    'google_play_package_name' => env('GOOGLE_PLAY_PACKAGE_NAME', 'com.some.thing'),
+    'google_play_package_name' => env('GOOGLE_PLAY_PACKAGE_NAME', 'com.organicproduce.com'),
 
     /*
      |--------------------------------------------------------------------------

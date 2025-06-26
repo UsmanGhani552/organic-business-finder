@@ -32,6 +32,17 @@ class Subscription extends Model
             $user->startSubscription();
         }
     }
+    public static function storeGoogleSubscription($data)
+    {
+        Subscription::updateOrCreate(
+            ['user_id' => $data['user_id']],
+            $data
+        );
+        $user = User::find($data['user_id']);
+        if ($user) {
+            $user->startSubscription();
+        }
+    }
 
     public static function changeStatus($subscription, $status, $autoRenewStatus)
     {

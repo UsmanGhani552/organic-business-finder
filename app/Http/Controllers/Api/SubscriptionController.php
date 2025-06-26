@@ -8,17 +8,19 @@ use App\Models\Membership;
 use App\Models\Setting;
 use App\Models\Subscription;
 use App\Models\User;
+use App\Services\GooglePlayService;
 use Carbon\Carbon;
 use Exception;
 use Firebase\JWT\JWT;
-use GuzzleHttp\Client;
 use Imdhemy\AppStore\Receipts\Verifier as AppStore;
-use Imdhemy\Purchases\Facades\Subscription as AppleSubscription;
+use Imdhemy\Purchases\Facades\Subscription as PurchasesSubscription;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Imdhemy\AppStore\ClientFactory;
 use Imdhemy\Purchases\Facades\Product;
+use Google\Client;
+use Google\Service\AndroidPublisher;
 
 class SubscriptionController extends Controller
 {
@@ -33,7 +35,9 @@ class SubscriptionController extends Controller
                 $subscription = $this->validateIos($request->all());
                 Subscription::storeSubscription($subscription);
             } else {
-                return response()->json(['message' => 'Google not implemented yet'], 200);
+                $subscription = $this->validateGoogle($request->all());
+                Subscription::storeGoogleSubscription($subscription);
+                // return response()->json(['message' => 'Google not implemented yet'], 200);
             }
 
             return response()->json(['message' => 'Subscription stored successfully'], 200);
@@ -45,12 +49,11 @@ class SubscriptionController extends Controller
     public function validateIos($data)
     {
         $receipt = $data['receipt'];
-        $receiptResponse = AppleSubscription::appStore()->receiptData($receipt)->verifyReceipt();
+        $receiptResponse = PurchasesSubscription::appStore()->receiptData($receipt)->verifyReceipt();
         $receiptStatus = $receiptResponse->getStatus();
         if ($receiptStatus->isValid()) {
             $latestReceiptInfo = $receiptResponse->getLatestReceiptInfo();
             $receiptInfo = $latestReceiptInfo[0];
-            dd($receiptInfo);
             // You can loop all of them or either get the first one (recently purchased).
             $expiresDate = $receiptInfo->getExpiresDate()->toDateTime();
             $data = [
@@ -74,19 +77,53 @@ class SubscriptionController extends Controller
         }
     }
 
+    public function validateGoogle($data)
+    {
+        try {
+            $productReceipt = PurchasesSubscription::googlePlay()
+                ->id(env('GOOGLE_PLAY_PRODDUCT_ID'))
+                ->token($data['receipt'])               // this must be the actual client-side token
+                ->get();
+            return [
+                'user_id' => auth()->user()->id,
+                'original_transaction_id' => $productReceipt->getOrderId(),
+                'transaction_id' => $productReceipt->getOrderId(),
+                'product_id' => env('GOOGLE_PLAY_PRODDUCT_ID'),
+                'platform' => 'google',
+                'transaction_receipt' => $data['receipt'],
+                'status' => 1,
+                'subscription_status' => 1,
+                'auto_renew_status' => 1,
+                'expires_date' => Carbon::createFromTimestampMs(
+                    $productReceipt->getExpiryTimeMillis()
+                ),
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ];
+        } catch (\Exception $e) {
+            throw new \Exception('Google Play validation failed: ' . $e->getMessage());
+        }
+    }
+
     public function getSubscription()
     {
         try {
             $user_id = auth()->user()->id;
             $subscription = Subscription::where('user_id', $user_id)->first();
-
             if (!$subscription) {
                 return response()->json([
                     'status_code' => 404,
                     'message' => 'No Subscription found'
                 ], 404);
             }
-            $response = $this->changeSubscriptionStatus($subscription);
+            // $response = $this->changeSubscriptionStatus($subscription);
+            if ($subscription->platform === 'ios') {
+                $response = $this->changeAppleSubscriptionStatus($subscription);
+            } elseif ($subscription->platform === 'google') {
+                $response = $this->changeGoogleSubscriptionStatus($subscription);
+            } else {
+                return response()->json(['message' => 'Unsupported platform'], 400);
+            }
             return $response;
         } catch (\Throwable $th) {
             return response()->json(['message' => 'An error occurred', 'error' => $th->getMessage()], 500);
@@ -127,6 +164,69 @@ class SubscriptionController extends Controller
         } catch (\Throwable $th) {
             throw $th;
         }
+    }
+
+    public function changeGoogleSubscriptionStatus(Subscription $subscription)
+    {
+        try {
+            $googlePlayService = new GooglePlayService();
+            // These values should be configured in your config/services.php
+            $packageName = env('GOOGLE_PLAY_PACKAGE_NAME');
+            $subscriptionId = $subscription->product_id; // e.g., 'organic_monthly_platinum'
+            $purchaseToken = $subscription->transaction_receipt;
+
+            $subscriptionInfo = $googlePlayService->getSubscription(
+                $packageName,
+                $subscriptionId,
+                $purchaseToken
+            );
+            // dd($subscriptionInfo);
+            // Map Google's status to your system's status
+            $status = $subscriptionInfo->paymentState == null ? 2 : 1;
+            $autoRenewStatus = (bool)$subscriptionInfo->autoRenewing == false ? 0 : 1 ;
+            // Update subscription in database
+            Subscription::changeStatus($subscription, $status, $autoRenewStatus);
+
+            return [
+                'data' => [
+                    [
+                        'lastTransactions' => [
+                            [
+                                'subscriptionInfo' => $subscriptionInfo,
+                                'paymentState' => $subscriptionInfo->paymentState,
+                                'autoRenewing' => $subscriptionInfo->autoRenewing,
+                                'expiryTime' => Carbon::createFromTimestampMs($subscriptionInfo->expiryTimeMillis),
+                            ]
+                        ]
+                    ]
+                ]
+            ];
+        } catch (\Throwable $th) {
+            throw new \Exception('Google Play subscription check failed: ' . $th->getMessage());
+        }
+    }
+
+    protected function mapGoogleStatus($subscriptionInfo)
+    {
+        $currentTime = Carbon::now()->timestamp * 1000; // Current time in milliseconds
+
+        // 1. First check if subscription is expired
+        if ($subscriptionInfo->expiryTimeMillis < $currentTime) {
+            return 2; // Expired
+        }
+
+        // 2. Check cancellation state
+        if ($subscriptionInfo->cancelReason !== null || $subscriptionInfo->userCancellationTimeMillis !== null) {
+            return 2; // Cancelled counts as expired
+        }
+
+        // 3. Check payment state if available
+        if ($subscriptionInfo->paymentState !== null && $subscriptionInfo->paymentState !== 1) {
+            return 2; // Only paymentState=1 is considered active
+        }
+
+        // 4. Default to active if none of the above conditions met
+        return 1; // Active
     }
 
     public function generateAppStoreJWT()
