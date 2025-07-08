@@ -67,7 +67,6 @@ class PasswordResetController extends Controller
             ], 400);
         }
     }
-
     public function resetPassword(ResetPasswordRequest $request) {
         try {
             $user_id = $request->validated()['user_id'];

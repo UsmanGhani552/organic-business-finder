@@ -34,7 +34,7 @@ class FarmController extends Controller
             $body = "Congratulations! Your listing is now live.";
             $firebaseService = app(FirebaseService::class);
             $res = $firebaseService->sendNotificationToMultipleDevices($deviceTokens, $title, $body);
-            DB::commit();
+            DB::commit(); 
             $farm->load('products');
             return response()->json([
                 'status_code' => 200,
@@ -80,7 +80,7 @@ class FarmController extends Controller
                 ->where('user_id', $user->id)
                 ->get();
             // return response($farms);
-            // dd($farms[7]->days->toArray());
+            // dd($farms[7]->days->toArray()); 
             // $farmArray = Farm::getFarmRelatedData($farms);
 
             return response()->json([

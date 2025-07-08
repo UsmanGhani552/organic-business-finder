@@ -82,7 +82,7 @@ Route::get('/get-farm-related-data', [FarmController::class, 'getFarmRelatedData
 Route::get('/get-near-by-farms', [FarmController::class, 'getNearByFarms']);
 
 
-Route::get('/change-subscription-status/{subscription}', [SubscriptionController::class, 'changeSubscriptionStatus'])->name('api.subscription.status');
+Route::get('/change-subscription-status/{subscription}', [SubscriptionController::class, 'changeSubscriptionStatus'])->name(name: 'api.subscription.status');
 Route::get('/get-subscription-plans', [SubscriptionController::class, 'getSubscriptionPlans']);
 Route::get('/decode-jwt/{jwt}', [SubscriptionController::class, 'decodeJwtPayload']);
 Route::post('/handle-webhook', [ChatController::class, 'handleWebhook']); 

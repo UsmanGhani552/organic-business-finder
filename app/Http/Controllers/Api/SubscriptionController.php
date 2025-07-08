@@ -132,6 +132,17 @@ class SubscriptionController extends Controller
 
     public function changeSubscriptionStatus(Subscription $subscription)
     {
+        if ($subscription->platform === 'apple') {
+            return $this->changeSubscriptionStatusApple($subscription);
+        } elseif ($subscription->platform === 'google') {
+            return $this->changeGoogleSubscriptionStatus($subscription);
+        } else {
+            return response()->json(['message' => 'Unsupported platform'], 400);
+        }
+    }
+
+    public function changeSubscriptionStatusApple(Subscription $subscription)
+    {
         try {
             $token = $this->generateAppStoreJWT();
             $response = Http::withHeaders([
