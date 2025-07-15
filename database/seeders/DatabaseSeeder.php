@@ -9,8 +9,10 @@ use App\Models\Day;
 use App\Models\FarmPayment;
 use App\Models\Payment;
 use App\Models\Service;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -33,10 +35,15 @@ class DatabaseSeeder extends Seeder
         // foreach ($categories as $category) {
         //     Category::create(['name' => $category]);
         // }
-        $services = ['Farm-to-table','CSA','U-Pick','Agro-tourism','Producer','Wholesaler'];
-        foreach ($services as $service) {
-            Service::create(['name' => $service]);
-        }
+        // $services = ['Farm-to-table','CSA','U-Pick','Agro-tourism','Producer','Wholesaler'];
+        // foreach ($services as $service) {
+        //     Service::create(['name' => $service]);
+        // }
         
+        User::updateOrCreate(['email' => 'admin@gmail.com'],[
+            'name' => 'admin',
+            'password' => Hash::make('admin123'),
+            'type' => 'admin'
+        ]);
     }
 }
