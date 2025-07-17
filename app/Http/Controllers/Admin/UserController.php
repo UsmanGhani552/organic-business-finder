@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 class UserController extends Controller
 {
     public function index() {
-        $users = User::all();
+        $users = User::orderBy('id','desc')->get();
         return view('admin.user.index',[
             'users' => $users
         ]);
